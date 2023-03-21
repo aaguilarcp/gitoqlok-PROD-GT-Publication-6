@@ -1,0 +1,72 @@
+///$tab EU Pilot
+Set dataManagerTables = '','GT_EUP_MAI_POL_ARE','GT_EU_PIL_IND_1';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_EUP_MAI_POL_ARE]:
+LOAD
+	[x1val] AS [GT_EUP_MAI_POL_ARE_Edition],
+    [y1val] AS [GT_EUP_MAI_POL_ARE.2021],
+	[y2val] AS [GT_EUP_MAI_POL_ARE.2020],
+	[y3val] AS [GT_EUP_MAI_POL_ARE.2019],
+	[y4val] AS [GT_EUP_MAI_POL_ARE.2018]
+	where [x1val] <> 'Edition';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUP_MAI_POL_ARE.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EU_PIL_IND_1]:
+LOAD
+	[x1val] AS [EU Member States],
+	[y1val] AS [GT_EUP_IND1.2020],
+	[y2val] AS [GT_EUP_IND1.2019],
+	[y3val] AS [GT_EUP_IND1.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EU_PIL_IND_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+///////////////////////////////Table Adjusting///////////////////////////////////////
+
+
+[GT_EUP_MAI_POL_ARE_temp_0ad2fa17-d55e-fd83-b0df-c5357c67]:
+LOAD
+	[GT_EUP_MAI_POL_ARE_Edition] AS [Main policy areas],
+    [GT_EUP_MAI_POL_ARE.2021],
+	[GT_EUP_MAI_POL_ARE.2020],
+	[GT_EUP_MAI_POL_ARE.2019],
+	[GT_EUP_MAI_POL_ARE.2018]
+RESIDENT [GT_EUP_MAI_POL_ARE];
+DROP TABLE [GT_EUP_MAI_POL_ARE];
+RENAME TABLE [GT_EUP_MAI_POL_ARE_temp_0ad2fa17-d55e-fd83-b0df-c5357c67] to [GT_EUP_MAI_POL_ARE];

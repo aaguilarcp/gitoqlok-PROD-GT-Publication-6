@@ -1,0 +1,274 @@
+///$tab EURES
+Set dataManagerTables = '','GT_EUR_PMS_COM_1','GT_EUR_QUA_IND1','GT_EUR_IT_COM_2','GT_EUR_VAC_MO_IND2','GT_EUR_LAB_MAR_3','GT_EUR_USE_SAT_4','GT_EUR_NUM_ADV_IND4','GT_EUR_JOB_PLA_5','GT_EUR_JOB_SEEK_MS','GT_EUR_EMP_REG_MS','GT_EUR_VIS_MS','GT_EUR_VIS_MONTH_MS','GT_EUR_NUM_ADV_MS','GT_EUR_JOB','GT_EUR_EMP','GT_EUR','GT_EUR_TRA';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+Unqualify *;
+
+[GT_EUR_PMS_COM_1]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_PMS_COM_IND1.2020]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_PMS_COM_1.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_QUA_IND1]:
+LOAD
+	[x1val] AS [GT_EUR_QUA_IND1_Edition],
+	[y1val] AS [GT_EUR_QUA_IND1.2018]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_QUA_OF_INF_1B.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_IT_COM_2]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_IT_COM_IND2.2020]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_IT_COM_2.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_VAC_MO_IND2]:
+LOAD
+	[x1val] AS [GT_EUR_VAC_MO_IND2_Edition],
+	[y1val] AS [GT_EUR_VAC_MO_IND2.2018]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_VAC_MO_2B.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_LAB_MAR_3]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_LAB_MAR_IND3.2020],
+	[y2val] AS [GT_EUR_LAB_MAR_IND3.2018]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+   
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_LAB_MAR_3.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_USE_SAT_4]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_USE_SAT_IND4.2020]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_USE_SAT_4.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_NUM_ADV_IND4]:
+LOAD
+	[x1val] AS [GT_EUR_NUM_ADV_IND4_Edition],
+	[y1val] AS [GT_EUR_NUM_ADV_IND4.2018]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_NUM_OF_ADV_4B.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_JOB_PLA_5]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_JOB_PLA_IND5.2020],
+	[y2val] AS [GT_EUR_JOB_PLA_IND5.2018]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+   
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_JOB_PLA_5.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_JOB_SEEK_MS]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_JOB_SEEK_MS.2020],
+	[y2val] AS [GT_EUR_JOB_SEEK_MS.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+   
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_JOB_SEEK_MS.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_EMP_REG_MS]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_EMP_REG_MS.2020],
+	[y2val] AS [GT_EUR_EMP_REG_MS.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_EMP_REG_MS.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_VIS_MS]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_VIS_MS.2020],
+	[y2val] AS [GT_EUR_VIS_MS.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+     
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_VIS_MS.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+
+[GT_EUR_VIS_MONTH_MS]:
+LOAD
+	[x1val] AS [GT_EUR_VIS_MONTH_MS_Measurement],
+	[x2val] AS [Month],
+	[x3val] AS [GT_EUR_VIS_MONTH_MS.2018],
+	[y1val] AS [GT_EUR_VIS_MONTH_MS.2017]
+    where [x1val] <> 'Measurement';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_VIS_MONTH_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_EUR_NUM_ADV_MS]:
+LOAD
+	[x1val] AS [GT_EUR_NUM_ADV_MS_Semester],
+	[x2val] AS [EURES],
+	[y1val] AS [GT_EUR_NUM_ADV_MS.2020],
+	[y2val] AS [GT_EUR_NUM_ADV_MS.2018]
+    where [x1val] <> 'Semester' and [x2val] <> 'Country' and [x2val] <> 'UK' and [x2val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_NUM_ADV_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_EUR_JOB]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [GT_EUR_JOB.2020],
+	[y2val] AS [GT_EUR_JOB.2018]
+       where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_JOB.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_EUR_EMP]:
+LOAD
+	[x1val] AS [EURES],
+	[y1val] AS [Employers]
+    where [x1val] <> 'Category' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_EMP.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_EUR]:
+LOAD
+	[x1val] AS [GT_EUR],
+	[x2val] AS [GT_EUR_Country],
+	[y1val] AS [GT_EUR.2018]
+	where [x1val] <> '' and [x2val] <> 'UK';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_EUR_TRA]:
+LOAD
+	[x1val] AS [Participation by type of training],
+	[y1val] AS [GT_EUR_TRA.2020],
+	[y2val] AS [GT_EUR_TRA.2018]
+    where [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_EUR_TRA.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[Mobility]:
+LOAD
+    Countries,
+    "share 2020",
+    "change 2017-2020"
+FROM [lib://AttachedFiles/2022.10.12_Mobility.xlsx]
+(ooxml, embedded labels, table is Mobility);

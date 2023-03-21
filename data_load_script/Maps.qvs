@@ -1,0 +1,116 @@
+///$tab Maps
+MAPPINGCOUNTRIES:
+Mapping
+LOAD * Inline [
+FROM,TO
+AT,Austria
+BE,Belgium
+BG,Bulgaria
+CY,Cyprus
+CZ,Czechia
+DK,Denmark
+DE,Germany
+EE,Estonia
+EL,Greece
+ES,Spain
+FI,Finland
+FR,France
+HR,Croatia
+HU,Hungary
+IE,Ireland
+IS,Iceland
+IT,Italy
+LT,Lithuania
+LI,Liechtenstein
+LU,Luxembourg
+LV,Latvia
+MT,Malta
+NL,Netherlands
+NO,Norway
+PL,Poland
+PT,Portugal
+RO,Romania
+SE,Sweden
+SI,Slovenia
+SK,Slovakia
+];
+
+Datamaps:
+Load Distinct
+PO,
+'https://web.qap.dataplatform.tech.ec.europa.eu/Content/flags/'&PO&'.png' as Flags,
+ApplyMap('MAPPINGCOUNTRIES',PO) as RealName
+Resident INT_PO1 where PO <> 'Avg' and PO <> 'UK' and PO <> Null() and PO <> '';
+//where not WildMatch(PO,'IS','NO','LI','Avg','UK','',null());
+
+left join
+Load Distinct PO, 'https://single-market-scoreboard.ec.europa.eu/countries/'&RealName as URLPages
+Resident Datamaps ;
+
+
+MAPPINGCOUNTRIES2: // Countries without IS, LI, NO for transposition and infrigment 
+Mapping
+LOAD * Inline [
+FROM,TO
+AT,Austria
+BE,Belgium
+BG,Bulgaria
+CY,Cyprus
+CZ,Czechia
+DK,Denmark
+DE,Germany
+EE,Estonia
+EL,Greece
+ES,Spain
+FI,Finland
+FR,France
+HR,Croatia
+HU,Hungary
+IE,Ireland
+//IS,Iceland
+IT,Italy
+LT,Lithuania
+//LI,Liechtenstein
+LU,Luxembourg
+LV,Latvia
+MT,Malta
+NL,Netherlands
+//NO,Norway
+PL,Poland
+PT,Portugal
+RO,Romania
+SE,Sweden
+SI,Slovenia
+SK,Slovakia
+];
+
+Datamaps2:
+Load Distinct
+PO			as PO2,
+'https://web.qap.dataplatform.tech.ec.europa.eu/Content/flags/'&PO&'.png' 	as Flags2,
+ApplyMap('MAPPINGCOUNTRIES2',PO) 											as RealName2,
+indicator_PO     															AS indicator_PO2,
+val_po           															AS val_po2
+Resident INT_PO1 where PO <> 'Avg' and PO <> 'UK' and PO <> Null() and PO <> '' and PO <> 'NO' and PO <> 'IS' and PO <> 'LI';
+//where not WildMatch(PO,'IS','NO','LI','Avg','UK','',null());
+
+left join
+Load Distinct PO2, 
+'https://single-market-scoreboard.ec.europa.eu/countries/'&RealName2 as URLPages2
+Resident Datamaps2 ;
+
+
+
+
+/*
+Datamaps2:
+LOAD
+    RealName,
+    Polygon,
+    Flags,
+    URLPages,
+    PO,
+    EU
+FROM [lib://AttachedFiles/MapsCountries.xlsx]
+(ooxml, embedded labels, table is Lastdatamaps);
+*/

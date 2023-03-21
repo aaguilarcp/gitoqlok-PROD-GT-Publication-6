@@ -1,0 +1,39 @@
+///$tab GT_ECE_OVE
+Set dataManagerTables = '','GT_ECE_OVE_CRI_COM_1','GT_ECE_OVE_CRI_COM_2';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+Unqualify *;
+
+[GT_ECE_OVE_CRI_COM_1]:
+
+LOAD
+	[Country] AS [GT_ECE_OVE_CRI_COM_1_Country],
+	[Colour] AS [GT_ECE_OVE_CRI_COM_1.Colour],
+	[Value] AS [GT_ECE_OVE_CRI_COM_1.Value]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is GT_ECE_OVE_CRI_COM_1);
+
+[GT_ECE_OVE_CRI_COM_2]:
+LOAD
+	[Country] AS [GT_ECE_OVE_CRI_COM_2_Country],
+	[Colour] AS [GT_ECE_OVE_CRI_COM_2.Colour],
+	[Value] AS [GT_ECE_OVE_CRI_COM_2.Value]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is GT_ECE_OVE_CRI_COM_2);

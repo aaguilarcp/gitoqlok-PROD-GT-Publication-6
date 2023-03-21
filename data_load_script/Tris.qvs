@@ -1,0 +1,261 @@
+///$tab Tris
+Set dataManagerTables = '','GT_TEST','GT_TRI_COM_MS2','GT_TRI_COM_MS3','GT_TRI_REA_REC_MS_1','GT_TRI_REA_REC_MS_2','GT_TRI_REA_STA','GT_TRI_NOT','GT_TRI_BY_SEC','GT_TRI_REA_REC_EC_1','GT_TRI_REA_REC_EC_12','GT_TRI_REA_REC_EC_2','GT_TRI_REA_SEN_BY_MS_1','GT_TRI_REA_SEN_BY_MS_2';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_TEST]:
+LOAD
+	[Date] AS [GT_TEST_dATE],
+	[2017],
+	[2018],
+	[2019]
+ FROM [lib://SMS/Transposition - Others -new try 2 x axis.xlsx]
+(ooxml, embedded labels, table is GT_TEST);
+
+
+
+[GT_TRI_REA_REC_MS_1]: //TRIS 
+LOAD
+	[x1val] AS [Number of reaction],
+	[y1val] AS [GT_TRI_MS_MS1.2022],
+	[y2val] AS [GT_TRI_MS_MS1.2021],
+	[y3val] AS [GT_TRI_MS_MS1.2020],
+	[y4val] AS [GT_TRI_MS_MS1.2019],
+	[y5val] AS [GT_TRI_MS_MS1.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_REC_MS_1.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+	"y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_REA_REC_MS_2]:
+LOAD
+	[x1val] AS [Number of reaction],
+	[y1val] AS [GT_TRI_MS_MS2.2022],
+	[y2val] AS [GT_TRI_MS_MS2.2021],
+	[y3val] AS [GT_TRI_MS_MS2.2020],
+	[y4val] AS [GT_TRI_MS_MS2.2019],
+	[y5val] AS [GT_TRI_MS_MS2.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_REC_MS_2.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+	"y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_REA_STA]:
+LOAD
+	[x1val] AS [Contributions received from stakeholders],
+	[y1val] AS [GT_TRI_REA_STA.2021]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_STA.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_NOT]:
+LOAD
+	[x1val] AS [GT_TRI_NOT_Country],
+    [y1val] AS [GT_TRI_NOT.2021],
+	[y2val] AS [GT_TRI_NOT.2020],
+	[y3val] AS [GT_TRI_NOT.2019],
+	[y4val] AS [GT_TRI_NOT.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_NOT.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_BY_SEC]:
+LOAD
+	[x1val] AS [GT_TRI_NOT_SEC_Edition],
+	[y1val] AS [GT_TRI_NOT_SEC.2021],
+    [y2val] AS [GT_TRI_NOT_SEC.2020],
+	[y3val] AS [GT_TRI_NOT_SEC.2019],
+	[y4val] AS [GT_TRI_NOT_SEC.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_BY_SEC.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_REA_REC_EC_1]:
+LOAD
+	[x1val] AS [GT_TRI_REA_REC_EC_12_Country-GT_TRI_REA_REC_EC_1_Country],
+    [y1val] AS [GT_TRI_COM_MS1.2021],
+	[y2val] AS [GT_TRI_COM_MS1.2020],
+	[y3val] AS [GT_TRI_COM_MS1.2019],
+	[y4val] AS [GT_TRI_COM_MS1.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_REC_EC_1.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_REA_REC_EC_12]:
+LOAD
+	[x1val] AS [GT_TRI_REA_REC_EC_12_Country-GT_TRI_REA_REC_EC_1_Country],
+	[y1val] AS [GT_TRI_COM_MS2.2021],
+    [y2val] AS [GT_TRI_COM_MS2.2020],
+	[y3val] AS [GT_TRI_COM_MS2.2019],
+	[y4val] AS [GT_TRI_COM_MS2.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_REC_EC_12.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_REA_REC_EC_2]:
+LOAD
+	[x1val] AS [GT_TRI_REA_REC_EC_12_Country-GT_TRI_REA_REC_EC_1_Country],
+	[y1val] AS [GT_TRI_COM_MS3.2021],
+    [y2val] AS [GT_TRI_COM_MS3.2020],
+	[y3val] AS [GT_TRI_COM_MS3.2019],
+	[y4val] AS [GT_TRI_COM_MS3.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_REC_EC_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_REA_SEN_BY_MS_1]:
+LOAD
+	[x1val] AS [Draft technical regulation],
+	[y1val] AS [GT_TRI_MS_DRA1.2021],
+    [y2val] AS [GT_TRI_MS_DRA1.2020],
+	[y3val] AS [GT_TRI_MS_DRA1.2019],
+	[y4val] AS [GT_TRI_MS_DRA1.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_SEN_BY_MS_1.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRI_REA_SEN_BY_MS_2]:
+LOAD
+	[x1val] AS [Draft technical regulation],
+    [y1val] AS [GT_TRI_MS_DRA2.2021],
+	[y2val] AS [GT_TRI_MS_DRA2.2020],
+	[y3val] AS [GT_TRI_MS_DRA2.2019],
+	[y4val] AS [GT_TRI_MS_DRA2.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_SEN_BY_MS_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+GT_TRI_TOT_NOT:
+LOAD	
+	[x1val] as [GT_TRI_TOT_NOT_MS],
+	[y1val] as [GT_TRI_TOT_NOT_LastYear]
+    Where [x1val]<>'Member State';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_TOT_NOT.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+GT_TRI_NOT_LEG_BAS:
+LOAD	
+	[x1val] as [GT_TRI_NOT_LEG_BAS_LEG_BAS],
+	[y1val] as [GT_TRI_NOT_LEG_BAS_LastYear]
+	Where [x1val]<>'Legal Base';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_NOT_LEG_BAS.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+GT_TRI_NOT_SEC_NEW:
+LOAD	
+	[x1val] as [GT_TRI_NOT_SEC_NEW_Sector],
+	[y1val] as [GT_TRI_NOT_SEC_NEW_LastYear]
+    where [x1val] <> 'Sector';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_NOT_SEC_NEW.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+GT_TRI_REA_AUT:
+LOAD	
+	[x1val] as [GT_TRI_REA_AUT_Author],
+	[x2val] as [GT_TRI_REA_AUT_Number]
+	where [x1val] <> 'Author';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRI_REA_AUT.csv';
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";

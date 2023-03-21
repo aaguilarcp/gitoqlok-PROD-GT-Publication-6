@@ -1,0 +1,86 @@
+///$tab CPC Network
+Set dataManagerTables = '','GT_CPC_NUM_OF_CAS';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_CPC_NUM_OF_CAS]:
+Crosstable (Years, Cases)
+LOAD
+	[x1val] AS [GT_CPC_NUM_CAS.Year],
+	[y1val] AS [2007],
+	[y2val] AS [2008],
+	[y3val] AS [2009],
+	[y4val] AS [2010],
+	[y5val] AS [2011],
+	[y6val] AS [2012],
+	[y7val] AS [2013],
+	[y8val] AS [2014],
+	[y9val] AS [2015],
+	[y10val] AS [2016],
+	[y11val] AS [2017],
+	[y12val] AS [2018],
+	[y13val] AS [2019],
+    [y14val] AS [2020]
+    where [x1val] <> 'Year';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_CPC_NUM_OF_CAS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+	"y5val",
+	"y6val",
+	"y7val",
+	"y8val",
+	"y9val",
+	"y10val",
+	"y11val",
+	"y12val",
+    "y13val",
+	"y14val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+///////////////////////////////Table Adjusting///////////////////////////////////////
+
+
+[GT_CPC_NUM_OF_CAS_temp_935d4724-3f9a-7df1-cf9e-58abaf23]:
+LOAD
+	[Years],
+	[GT_CPC_NUM_CAS.Year],
+	[Cases] AS [GT_CPC_NUM_CAS.Cases]
+RESIDENT [GT_CPC_NUM_OF_CAS];
+DROP TABLE [GT_CPC_NUM_OF_CAS];
+
+RENAME TABLE [GT_CPC_NUM_OF_CAS_temp_935d4724-3f9a-7df1-cf9e-58abaf23] to [GT_CPC_NUM_OF_CAS];
+
+
+[GT_CPC_NUM_OF_CAS_temp_876919e1-11a4-b116-3f0f-0b5a8ed2]:
+LOAD
+	[Years] AS [Number of CPC Cases],
+	[GT_CPC_NUM_CAS.Year],
+	[GT_CPC_NUM_CAS.Cases]
+RESIDENT [GT_CPC_NUM_OF_CAS];
+DROP TABLE [GT_CPC_NUM_OF_CAS];
+
+RENAME TABLE [GT_CPC_NUM_OF_CAS_temp_876919e1-11a4-b116-3f0f-0b5a8ed2] to [GT_CPC_NUM_OF_CAS];

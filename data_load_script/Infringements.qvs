@@ -1,0 +1,327 @@
+///$tab Infringements
+Set dataManagerTables = '(GT_INF_NUM_OF_PEN...)','GT_INF_NUM_OF_PEN','GT_INF_DUR_BY_SEC','GT_INF_TYP_CAS','GT_INF_PEN_CAS_EFT','GT_INF_NO_OF_INF_CAS','GT_INF_EVO_BY_MS','GT_INF_IND_1','GT_INF_IND_2','GT_INF_IND_3_UPD','GT_INF_IND_3','GT_INF_IND_3B','GT_INF_IND_4_UPD','GT_INF_IND_4','GT_INF_IND_4B';
+//This block renames script tables from non generated section which conflict with the names of managed tables 
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_INF_NUM_OF_PEN]:
+LOAD
+	[x1val] AS [Edition],
+    [y1val] AS [2022],
+    [y2val] AS [2021],
+	[y3val] AS [2020],
+	[y4val] AS [GT_INF_NUM_OF_PEN.2019],
+	[y5val] AS [GT_INF_NUM_OF_PEN.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_PEN_CAS_EFT.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val",
+    "y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_NO_OF_INF_CAS]:
+Load
+	[x1val] AS [GT_INF_NUM_OF_INF_CAS.Year],
+	[x2val] AS [GT_INF_NUM_OF_INF_CAS.Number]
+    where [x1val] <> 'Year';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_NO_OF_INF_CAS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_EVO_BY_MS]:
+Crosstable (Number, Year)
+LOAD	
+	[x1val] AS [GT_INF_EVO_MS.Year],
+	[x2val] AS [AT],
+	[x3val] AS [BE],
+	[x4val] AS [BG],
+	[x5val] AS [CY],
+	[x6val] AS [CZ],
+	[x7val] AS [DE],
+	[x8val] AS [DK],
+	[x9val] AS [EE],
+	[x10val] AS [EL],
+	[x11val] AS [ES],
+	[x12val] AS [FI],
+	[x13val] AS [FR],
+	[x14val] AS [HR],
+	[x15val] AS [HU],
+	[x16val] AS [IE],
+	[x17val] AS [IT],
+	[x18val] AS [LT],
+	[x19val] AS [LU],
+	[x20val] AS [LV],
+	[x21val] AS [MT],
+	[x22val] AS [NL],
+	[x23val] AS [PL],
+	[x24val] AS [PT],
+	[x25val] AS [RO],
+	[x26val] AS [SE],
+	[x27val] AS [SI],
+	[x28val] AS [SK],
+	[x29val] AS [UK],
+	[x30val] AS [IS],
+	[x31val] AS [LI],
+	[x32val] AS [NO],
+	[x33val] AS [EU Average],
+	[x34val] AS [EEA EFTA]
+    where [x1val] <> 'Year' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_EVO_BY_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val",
+	"x6val",
+	"x7val",
+	"x8val",
+	"x9val",
+	"x10val",
+	"x11val",
+	"x12val",
+	"x13val",
+	"x14val",
+	"x15val",
+	"x16val",
+	"x17val",
+	"x18val",
+	"x19val",
+	"x20val",
+	"x21val",
+	"x22val",
+	"x23val",
+	"x24val",
+	"x25val",
+	"x26val",
+	"x27val",
+	"x28val",
+	"x29val",
+	"x30val",
+	"x31val",
+	"x32val",
+	"x33val",
+	"x34val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[CSV_source]:
+
+RENAME TABLE [GT_INF_NUM_OF_PEN] to [(GT_INF_NUM_OF_PEN...)];
+
+[GT_INF_DUR_BY_SEC]:
+LOAD
+	[x1val] AS [Average duration by sector],
+    [x2val] AS [GT_INF_DUR_BY_SEC_UPD.2021],
+	[x3val] AS [Months]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> 'Avg';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_DUR_BY_SEC.csv';
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_TYP_OF_CAS]:
+LOAD
+	[x1val] AS [Type of Case],
+	[y1val] AS [Number of pending infringement cases]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_TYP_OF_CAS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_PEN_CAS_EFT]:
+LOAD
+	[x1val] AS [Number of pending cases],
+    [y1val] AS [GT_INF_NUM_OF_PEN_UPD.2021],
+	[y2val] AS [GT_INF_NUM_OF_PEN_UPD.2020],
+	[y3val] AS [GT_INF_NUM_OF_PEN_UPD.2019],
+	[y4val] AS [GT_INF_NUM_OF_PEN_UPD.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_PEN_CAS_EFT.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_IND_1]:
+LOAD
+	[x1val] AS [Infringements],
+    [y1val] AS [GT_INF_IND_1.2021],
+	[y2val] AS [GT_INF_IND_1.2020],
+	[y3val] AS [GT_INF_IND_1.2019],
+	[y4val] AS [GT_INF_IND_1.2018],
+    [y5val] AS [GT_INF_IND_1.2017]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_1.csv';
+SQL SELECT 
+	"x1val",
+    "y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+    "y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_IND_1_table]:
+Crosstable (INF_IND1_Year, INF_IND1_Values, 1)
+LOAD
+[Infringements],
+[GT_INF_IND_1.2018] as [2018],
+[GT_INF_IND_1.2019] as [2019],
+[GT_INF_IND_1.2020] as [2020],
+[GT_INF_IND_1.2021] as [2021]
+RESIDENT [GT_INF_IND_1];
+
+[GT_INF_IND_2]:
+LOAD
+	[x1val] AS [Infringements],
+	[y1val] AS [GT_INF_IND_2.2021],
+	[y2val] AS [GT_INF_IND_2.2020],
+	[y3val] AS [GT_INF_IND_2.2019],
+    [y4val] AS [GT_INF_IND_2.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_2.csv';
+SQL SELECT
+	"x1val",
+    "y1val",
+	"y2val",
+	"y3val",
+	"y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_IND_3]:
+LOAD
+	[x1val] AS [Infringements],
+	[y1val] AS [GT_INF_IND_3.2021],
+	[y2val] AS [GT_INF_IND_3.2020],
+	[y3val] AS [GT_INF_IND_3.2019],
+    [y4val] AS [GT_INF_IND_3.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_3.csv';
+SQL SELECT 
+	"x1val",
+    "y1val",
+	"y2val",
+	"y3val",
+	"y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+INNER JOIN ([GT_INF_IND_3]) LOAD
+	[x1val] AS [Infringements],
+    [y1val] AS [GT_INF_IND_3B.2021],
+	[y2val] AS [GT_INF_IND_3B.2020],
+	[y3val] AS [GT_INF_IND_3B.2019],
+	[y4val] AS [GT_INF_IND_3B.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_3B.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_INF_IND_4]:
+LOAD
+	[x1val] AS [Infringements4],
+	[y1val] AS [GT_INF_IND_4.2021],
+	[y2val] AS [GT_INF_IND_4.2020],
+	[y3val] AS [GT_INF_IND_4.2019],
+    [y4val] AS [GT_INF_IND_4.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_4.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+INNER JOIN ([GT_INF_IND_4]) LOAD
+	[x1val] AS [Infringements4],
+    [y1val] AS [GT_INF_IND_4B.2021],
+	[y2val] AS [GT_INF_IND_4B.2020],
+	[y3val] AS [GT_INF_IND_4B.2019],
+	[y4val] AS [GT_INF_IND_4B.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_4B.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+RENAME TABLE [GT_TRA_IND_1] to [GT_TRA_IND_1_UPD];
+RENAME TABLE [GT_TRA_IND_1_UPD] to [GT_TRA_IND_1_UPD2];
+RENAME TABLE [GT_INF_IND_3] to [GT_INF_IND_3_UPD];
+RENAME TABLE [GT_INF_IND_4] to [GT_INF_IND_4_UPD];
+
+
+///////////////////////////////Table Adjusting///////////////////////////////////////
+
+[GT_INF_EVO_BY_MS_temp_2eb5d50c-c442-60bc-f245-9fb9ddc8]:
+LOAD
+	[Number] AS [EU Member State],
+	[GT_INF_EVO_MS.Year],
+	[Year] AS [GT_INF_EVO_MS.Number]
+RESIDENT [GT_INF_EVO_BY_MS];
+DROP TABLE [GT_INF_EVO_BY_MS];
+
+RENAME TABLE [GT_INF_EVO_BY_MS_temp_2eb5d50c-c442-60bc-f245-9fb9ddc8] to [GT_INF_EVO_BY_MS];
+
+[GT_INF_PEN_CAS_EFT_TABLE]:
+Crosstable (INF_PEN_CAS_EFT_Year, INF_PEN_CAS_EFT_Values, 1)
+LOAD
+[Number of pending cases],
+[GT_INF_NUM_OF_PEN_UPD.2018] as [2018],
+[GT_INF_NUM_OF_PEN_UPD.2019] as [2019],
+[GT_INF_NUM_OF_PEN_UPD.2020] as [2020],
+[GT_INF_NUM_OF_PEN_UPD.2021] as [2021]
+RESIDENT [GT_INF_PEN_CAS_EFT];

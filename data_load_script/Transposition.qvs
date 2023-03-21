@@ -1,0 +1,435 @@
+///$tab Transposition
+Set dataManagerTables = 'GT_TRA_COM_CHE','GT_TRA_TRA_DEF_EFT','GT_TRA_TRA_DEF_EFT_2','GT_TRA_CHA_TRA_DEF','GT_TRA_TRA_BY_MS','GT_TRA_COM_RAT','GT_TRA_IND_2','GT_TRA_TRA_DEF_EFT_TEST','GT_TRA_TRA_DEF_EFT','GT_TRA_IND_5','GT_TRA_IND_1_UPD2','GT_TRA_IND_1_UPD','GT_TRA_IND_1','GT_TRA_IND_1B_4B','GT_TRA_IND_2-1';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_TRA_COM_CHE]:
+LOAD
+	[x1val] AS [GT_TRAN_COMP_CHECK.EDITION],
+    [y1val] AS [GT_TRAN_COMP_CHECK.2022],
+    [y2val] AS [GT_TRAN_COMP_CHECK.2021],
+	[y3val] AS [GT_TRAN_COMP_CHECK.2020],
+	[y4val] AS [GT_TRAN_COMP_CHECK.2019],
+	[y5val] AS [GT_TRAN_COMP_CHECK.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> 'Avg' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_COM_CHE.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val",
+    "y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+
+[GT_TRA_TRA_DEF_EFT]:
+LOAD
+	[x1val] AS [GT_TRA_TRA_DEF_EFT.],
+	[y1val] AS [GT_TRA_TRA_DEF_EFT.2021],
+	[y2val] AS [GT_TRA_TRA_DEF_EFT.2020],
+	[y3val] AS [GT_TRA_TRA_DEF_EFT.2019],
+	[y4val] AS [GT_TRA_TRA_DEF_EFT.2018],
+    [y5val] AS [GT_TRA_TRA_DEF_EFT.2017]
+    where [x1val] <> 'Date' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_TRA_DEF_EFT.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val",
+    "y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+
+[GT_TRA_TRA_DEF_EFT_COUNT]:
+	LOAD
+    if([GT_TRA_TRA_DEF_EFT.] <> 'EEA EFTA',[GT_TRA_TRA_DEF_EFT.]) as [EU Members States],
+    [GT_TRA_TRA_DEF_EFT.2021],
+    [GT_TRA_TRA_DEF_EFT.2020],
+    [GT_TRA_TRA_DEF_EFT.2019],
+    [GT_TRA_TRA_DEF_EFT.2018],
+    [GT_TRA_TRA_DEF_EFT.2017]
+Resident GT_TRA_TRA_DEF_EFT;
+    
+[GT_TRA_TRA_DEF_EFT_2]:
+LOAD
+	[x1val] AS [GT_TRA_TRA_DEF_EFT.x1val],
+	[y1val] AS [GT_TRA_TRA_DEF_EFT.2021],
+	[y2val] AS [GT_TRA_TRA_DEF_EFT.2020],
+	[y3val] AS [GT_TRA_TRA_DEF_EFT.2019],
+    [y4val] AS [GT_TRA_TRA_DEF_EFT.2018],
+    [y5val] AS [GT_TRA_TRA_DEF_EFT.2017]
+    where [x1val] <> 'Date' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_TRA_DEF_EFT_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val",
+    "y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+
+[GT_TRA_CHA_TRA_DEF]:
+//Crosstable (Month, Percentage)
+LOAD
+	[x1val] AS [Changes in the average transposition deficit],
+	[x2val] AS [Changes in the average transposition deficit percentage]
+    where [x1val] <> 'Date' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_CHA_TRA_DEF.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_TRA_TRA_BY_MS]:
+Crosstable ([GT_TRAN_TRAN_MS.Country],[GT_TRAN_TRAN_MS.Percentage])
+LOAD
+    [x1val] AS [GT_TRAN_TRAN_MS.Year],
+	[x2val] AS [AT],
+	[x3val] AS [BE],
+	[x4val] AS [BG],
+	[x5val] AS [CY],
+	[x6val] AS [CZ],
+	[x7val] AS [DE],
+	[x8val] AS [DK],
+	[x9val] AS [EE],
+	[x10val] AS [EL],
+	[x11val] AS [ES],
+	[x12val] AS [FI],
+	[x13val] AS [FR],
+	[x14val] AS [HR],
+	[x15val] AS [HU],
+	[x16val] AS [IE],
+	[x17val] AS [IT],
+	[x18val] AS [LT],
+	[x19val] AS [LU],
+	[x20val] AS [LV],
+	[x21val] AS [MT],
+	[x22val] AS [NL],
+	[x23val] AS [PL],
+	[x24val] AS [PT],
+	[x25val] AS [RO],
+	[x26val] AS [SE],
+	[x27val] AS [SI],
+	[x28val] AS [SK],
+	[x29val] AS [UK],
+	[x30val] AS [IS],
+	[x31val] AS [LI],
+	[x32val] AS [NO],
+	[x33val] AS [EU Average],
+	[x34val] AS [EEA EFTA]
+    where [x1val] <> 'Year' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_TRA_BY_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val",
+	"x6val",
+	"x7val",
+	"x8val",
+	"x9val",
+	"x10val",
+	"x11val",
+	"x12val",
+	"x13val",
+	"x14val",
+	"x15val",
+	"x16val",
+	"x17val",
+	"x18val",
+	"x19val",
+	"x20val",
+	"x21val",
+	"x22val",
+	"x23val",
+	"x24val",
+	"x25val",
+	"x26val",
+	"x27val",
+	"x28val",
+	"x29val",
+	"x30val",
+	"x31val",
+	"x32val",
+	"x33val",
+	"x34val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRA_COM_RAT]:
+LOAD
+	[x1val] AS [Changes in the incompleteness rate],
+	[x2val] AS [Value]
+    where [x1val] <> 'Date';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_COM_RAT.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+
+
+[GT_TRA_IND_1]:
+LOAD
+	[x1val] AS [Transposition],
+    [y1val] AS [GT_TRA_IND_1   .2021],
+	[y2val] AS [GT_TRA_IND_1   .2020],
+	[y3val] AS [GT_TRA_IND_1   .2019],
+	[y4val] AS [GT_TRA_IND_1   .2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> 'Avg' and [x1val] <> '';
+ 
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+INNER JOIN ([GT_TRA_IND_1]) LOAD
+	[x1val] AS [Transposition],
+    [y1val] AS [GT_TRA_IND_1B_4B.2021],
+	[y2val] AS [GT_TRA_IND_1B_4B.2020],
+	[y3val] AS [GT_TRA_IND_1B_4B.2019],
+	[y4val] AS [GT_TRA_IND_1B_4B.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_1B_4B.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+INNER JOIN ([GT_TRA_IND_1]) LOAD
+	[x1val] AS [Transposition],
+    [y1val] AS [GT_TRA_IND_4 .2021],
+	[y2val] AS [GT_TRA_IND_4 .2020],
+	[y3val] AS [GT_TRA_IND_4 .2019],
+	[y4val] AS [GT_TRA_IND_4 .2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> 'Avg' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_4.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRA_IND_4]:
+Crosstable (IND4Year, IND4Values, 1)
+LOAD 
+	[x1val] AS [Transposition4],
+	[y1val] AS [2021],
+	[y2val] AS [2020],
+	[y3val] AS [2019],
+	[y4val] AS [2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '' and [x1val] <> 'Avg';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_4.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_TRA_IND_4B]:
+Crosstable (IND4BYear, IND4BValues, 1)
+LOAD
+	[x1val] AS [Transposition4],
+    [y1val] AS [2021],
+	[y2val] AS [2020],
+	[y3val] AS [2019],
+	[y4val] AS [2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '' and [x1val] <> 'Avg';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_1B_4B.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_TRA_IND_2]:
+LOAD
+	[x1val] AS [Transposition],
+    [y1val] AS [GT_TRA_IND_2.2021],
+	[y2val] AS [GT_TRA_IND_2.2020],
+	[y3val] AS [GT_TRA_IND_2.2019],
+	[y4val] AS [GT_TRA_IND_2.2018]
+//     where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '' and [x1val] <> 'Avg';
+where not WildMatch([x1val],'Edition','UK','Avg','Avg.');
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_2.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_TRA_IND_2-1]:
+LOAD
+	[x1val] AS [GT_TRA_COUNTRY],
+	[y1val] AS [GT_TRA_IND_2-1.2021]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '' and [x1val] <> 'Avg';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+///////////////////////////////Table Adjusting///////////////////////////////////////
+
+
+Unqualify *;
+
+[GT_TRA_TRA_DEF_EFT_temp_5863b0c3-e36c-90bd-052c-fc7b4dda]:
+LOAD
+	[GT_TRA_TRA_DEF_EFT.2018] AS [GT_TRA_TRA_DEF_EFT.GT_TRA_TRA_DEF_EFT..2018],
+	[GT_TRA_TRA_DEF_EFT.2019] AS [GT_TRA_TRA_DEF_EFT.GT_TRA_TRA_DEF_EFT..2019],
+	[GT_TRA_TRA_DEF_EFT.2017] AS [GT_TRA_TRA_DEF_EFT.GT_TRA_TRA_DEF_EFT..2017],
+    [GT_TRA_TRA_DEF_EFT.2020] AS [GT_TRA_TRA_DEF_EFT.GT_TRA_TRA_DEF_EFT..2020],
+    [GT_TRA_TRA_DEF_EFT.2021] AS [GT_TRA_TRA_DEF_EFT.GT_TRA_TRA_DEF_EFT..2021],
+	[GT_TRA_TRA_DEF_EFT.]
+RESIDENT [GT_TRA_TRA_DEF_EFT];
+DROP TABLE [GT_TRA_TRA_DEF_EFT];
+
+[GT_TRA_TRA_DEF_EFT_2_temp_8eb55a09-6f9e-a40f-c76f-0be3bd41]:
+LOAD
+	[GT_TRA_TRA_DEF_EFT.2017] AS [GT_TRA_TRA_DEF_EFT_2.GT_TRA_TRA_DEF_EFT..2017],
+	[GT_TRA_TRA_DEF_EFT.2018] AS [GT_TRA_TRA_DEF_EFT_2.GT_TRA_TRA_DEF_EFT..2018],
+	[GT_TRA_TRA_DEF_EFT.2019] AS [EFTA_2_GT_TRA_TRA_DEF_EFT2019],
+    [GT_TRA_TRA_DEF_EFT.2020] AS [EFTA_2_GT_TRA_TRA_DEF_EFT2020],
+    [GT_TRA_TRA_DEF_EFT.2021] AS [EFTA_2_GT_TRA_TRA_DEF_EFT2021],
+	[GT_TRA_TRA_DEF_EFT.x1val]
+RESIDENT [GT_TRA_TRA_DEF_EFT_2];
+DROP TABLE [GT_TRA_TRA_DEF_EFT_2];
+
+RENAME TABLE [GT_TRA_TRA_DEF_EFT_temp_5863b0c3-e36c-90bd-052c-fc7b4dda] to [GT_TRA_TRA_DEF_EFT];
+RENAME TABLE [GT_TRA_TRA_DEF_EFT] to [GT_TRA_TRA_DEF_EFT_TEST];
+
+RENAME TABLE [GT_TRA_TRA_DEF_EFT_2_temp_8eb55a09-6f9e-a40f-c76f-0be3bd41] to [GT_TRA_TRA_DEF_EFT_2];
+
+[GT_TRA_TRA_DEF_EFT_COUNT_temp_2f1da13c-b9a2-5351-f335-9e4e16eb]:
+LOAD
+	[EU Members States] AS [EEA ΕFTA country],
+	[GT_TRA_TRA_DEF_EFT.2021]
+RESIDENT [GT_TRA_TRA_DEF_EFT_COUNT];
+DROP TABLE [GT_TRA_TRA_DEF_EFT_COUNT];
+
+INNER JOIN ([GT_TRA_TRA_DEF_EFT_COUNT_temp_2f1da13c-b9a2-5351-f335-9e4e16eb]) LOAD
+	[GT_TRA_TRA_DEF_EFT.x1val] AS [EEA ΕFTA country],
+	[EFTA_2_GT_TRA_TRA_DEF_EFT2021]
+RESIDENT [GT_TRA_TRA_DEF_EFT_2];
+DROP TABLE [GT_TRA_TRA_DEF_EFT_2];
+
+[GT_TRA_TRA_DEF_EFT_COUNT_updated2]:
+LOAD
+	[EEA ΕFTA country],
+	[GT_TRA_TRA_DEF_EFT.2021] as [Transposition Deficit],
+	[EFTA_2_GT_TRA_TRA_DEF_EFT2021]
+RESIDENT [GT_TRA_TRA_DEF_EFT_COUNT_temp_2f1da13c-b9a2-5351-f335-9e4e16eb];
+DROP TABLE [GT_TRA_TRA_DEF_EFT_COUNT_temp_2f1da13c-b9a2-5351-f335-9e4e16eb];
+
+
+[GT_TRA_COM_CHE_temp_5e5c46fb-0a9e-43b5-dd8c-b07a15c9]:
+LOAD
+	[GT_TRAN_COMP_CHECK.EDITION] AS [Directives under completeness check],
+    [GT_TRAN_COMP_CHECK.2022],
+    [GT_TRAN_COMP_CHECK.2021],
+	[GT_TRAN_COMP_CHECK.2020],
+	[GT_TRAN_COMP_CHECK.2019],
+	[GT_TRAN_COMP_CHECK.2018]
+RESIDENT [GT_TRA_COM_CHE];
+DROP TABLE [GT_TRA_COM_CHE];
+
+RENAME TABLE [GT_TRA_COM_CHE_temp_5e5c46fb-0a9e-43b5-dd8c-b07a15c9] to [GT_TRA_COM_CHE];
+
+[GT_TRA_TRA_DEF_EFT]:
+LOAD
+	[x1val] AS [Transposition],
+    [y1val] AS [GT_TRA_TRA_DEF_EFT.2021],
+	[y2val] AS [GT_TRA_TRA_DEF_EFT.2020],
+	[y3val] AS [GT_TRA_TRA_DEF_EFT.2019],
+	[y4val] AS [GT_TRA_TRA_DEF_EFT.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '' and [x1val] <> 'Avg';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_5B.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+INNER JOIN ([GT_TRA_TRA_DEF_EFT]) LOAD
+	[x1val] AS [Transposition],
+    [y1val] AS [GT_TRA_COM_CHE.2021],
+	[y2val] AS [GT_TRA_COM_CHE.2020],
+	[y3val] AS [GT_TRA_COM_CHE.2019],
+	[y4val] AS [GT_TRA_COM_CHE.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> 'Avg' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_5.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";

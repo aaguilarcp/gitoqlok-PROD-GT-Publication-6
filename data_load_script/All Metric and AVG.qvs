@@ -1,0 +1,1138 @@
+///$tab All Metric and AVG
+Set dataManagerTables = '','ALLMETRICS_TRANS','TL_Transposition','TRAFFIC LIGHT FOR SOLVIT ','Sheet12','Sheet1-1','EU Pilot','EU Pilot-1','EU Pilot-2','EU Pilot-3','EU Pilot-4','EU Pilot-5','EU Pilot-6','Tr Performance Overview Ecertis','Sub indicator exclusion (1)','Sub indicator selection (1)','Sub indicator exclusion (2)','Sub indicator selection (2)';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+Unqualify *;
+
+///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////Data Load From Excels//////////////////////////////////////////
+[Sheet1_27ac310f-415b-ae2d-9311-ce084140]:
+LOAD
+	[Performance Indicators],
+	[BE],
+	[BG],
+	[CZ],
+	[DK],
+	[DE],
+	[EE],
+	[IE],
+	[EL],
+	[ES],
+	[FR],
+	[HR],
+	[IT],
+	[CY],
+	[LV],
+	[LT],
+	[LU],
+	[HU],
+	[MT],
+	[NL],
+	[AT],
+	[PL],
+	[PT],
+	[RO],
+	[SI],
+	[SK],
+	[FI],
+	[SE],
+	[EU Avg]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is TL_Transposition);
+
+[TRAFFIC LIGHT FOR SOLVIT ]:
+LOAD
+	[Performance Indicators SOLVIT],
+	[SOLVIT BE],
+	[SOLVIT BG],
+	[SOLVIT CZ],
+	[SOLVIT DK],
+	[SOLVIT DE],
+	[SOLVIT EE],
+	[SOLVIT IE],
+	[SOLVIT EL],
+	[SOLVIT ES],
+	[SOLVIT FR],
+	[SOLVIT HR],
+	[SOLVIT IT],
+	[SOLVIT CY],
+	[SOLVIT LV],
+	[SOLVIT LT],
+	[SOLVIT LU],
+	[SOLVIT HU],
+	[SOLVIT MT],
+	[SOLVIT NL],
+	[SOLVIT AT],
+	[SOLVIT PL],
+	[SOLVIT PT],
+	[SOLVIT RO],
+	[SOLVIT SI],
+	[SOLVIT SK],
+	[SOLVIT FI],
+	[SOLVIT SE],
+	[SOLVIT IS],
+	[SOLVIT LI]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is TL_Solvit);
+
+[Sheet1_b404f096-26e0-82de-a5cb-0381d5d3]:
+LOAD
+	[x1val] as [YEA Performance Indicators],
+	[x2val] as [BE YEA],
+	[x3val] as [BG YEA],
+	[x4val] as [CZ YEA],
+	[x5val] as [DK YEA],
+	[x6val] as [DE YEA],
+	[x7val] as [EE YEA],
+	[x8val] as [IE YEA],
+	[x9val] as [EL YEA],
+	[x10val] as [ES YEA],
+	[x11val] as [FR YEA],
+	[x12val] as [HR YEA],
+	[x13val] as [IT YEA],
+	[x14val] as [CY YEA],
+	[x15val] as [LV YEA],
+	[x16val] as [LT YEA],
+	[x17val] as [LU YEA],
+	[x18val] as [HU YEA],
+	[x19val] as [MT YEA],
+	[x20val] as [NL YEA],
+	[x21val] as [AT YEA],
+	[x22val] as [PL YEA],
+	[x23val] as [PT YEA],
+	[x24val] as [RO YEA],
+	[x25val] as [SI YEA],
+	[x26val] as [SK YEA],
+	[x27val] as [FI YEA],
+	[x28val] as [SE YEA],
+	[x30val] as [IS YEA],
+	[x31val] as [LI  YEA],
+	[x32val] as [NO YEA]
+    where [x1val] <> 'YEA Performance Indicators' and [x1val] <> '';
+ 
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_TL.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val",
+	"x6val",
+	"x7val",
+	"x8val",
+	"x9val",
+	"x10val",
+	"x11val",
+	"x12val",
+	"x13val",
+	"x14val",
+	"x15val",
+	"x16val",
+	"x17val",
+	"x18val",
+	"x19val",
+	"x20val",
+	"x21val",
+	"x22val",
+	"x23val",
+    "x24val",
+    "x25val",
+    "x26val",
+    "x27val",
+    "x28val",
+    "x30val",
+    "x31val",
+    "x32val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[EU Pilot_50e52db4-8cb9-930b-676c-e6871fa8]:
+LOAD
+	[Performance Indicators EU Pilot],
+	[EUPILOT BE],
+	[EUPILOT BG],
+	[EUPILOT CZ],
+	[EUPILOTDK],
+	[EUPILOT DE],
+	[EUPILOT EE],
+	[EUPILOT IE],
+	[EUPILOTEL],
+	[EUPILOT ES],
+	[EUPILOT FR],
+	[EUPILOTHR],
+	[EUPILOTIT],
+	[EUPILOTCY],
+	[EUPILOT LV],
+	[EUPILOT LT],
+	[EUPILOTLU],
+	[EUPILOT HU],
+	[EUPILOTMT],
+	[EUPILOTNL],
+	[EUPILOTAT],
+	[EUPILOT PL],
+	[EUPILOT PT],
+	[EUPILOT RO],
+	[EUPILOT SI],
+	[EUPILOT SK],
+	[EUPILOTFI],
+	[EUPILOT SE]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_EU_Pilot]);
+
+[EU Pilot_3968df60-5cd9-252f-2929-182c3f28]:
+LOAD
+	[Performance Indicators Infringements],
+	[IFRIBE],
+	[IFRIBG],
+	[IFRICZ],
+	[IFRIDK],
+	[IFRIDE],
+	[IFRIEE],
+	[IFRIIE],
+	[IFRIEL],
+	[IFRIES],
+	[IFRIFR],
+	[IFRIHR],
+	[IFRITIT],
+	[IFRICY],
+	[IFRILV],
+	[IFRILT],
+	[IFRILU],
+	[IFRIHU],
+	[IFRIMT],
+	[IFRINL],
+	[IFRIAT],
+	[IFRIPL],
+	[IFRIPT],
+	[IFRIRO],
+	[IFRISI],
+	[IFRISK],
+	[IFRIFI],
+	[IFRISE],
+	[IFRIeuaVG]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_INF]);
+
+[EU Pilot_1ef346c7-67e5-cb38-657d-9e9ddeda]:
+LOAD
+	[Performance Indicators IMI],
+	[IMIBE],
+	[IMIBG],
+	[IMICZ],
+	[IMIDK],
+	[IMIDE],
+	[IMIEE],
+	[IMIIE],
+	[IMIEL],
+	[IMIES],
+	[IMIFR],
+	[IMIHR],
+	[IMIIT],
+	[IMICY],
+	[IMILV],
+	[IMILT],
+	[IMILU],
+	[IMIHU],
+	[IMIMT],
+	[IMINL],
+	[IMIAT],
+	[IMIPL],
+	[IMIPT],
+	[IMIRO],
+	[IMISI],
+	[IMISK],
+	[IMIFI],
+	[IMISE],
+	[IMIIS],
+	[IMILI],
+	[IMINO]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_IMI]);
+
+[EU Pilot_6eaf1a75-2eb8-251d-ffb1-0a5d512f]:
+LOAD
+	[Performance Indicators EURES],
+	[EURESBE],
+	[EURESBG],
+	[EURESCZ],
+	[EURESDK],
+	[EURESDE],
+	[EURESEE],
+	[EURESIE],
+	[EURESEL],
+	[EURESES],
+	[EURESFR],
+	[EURESHR],
+	[EURESIT],
+	[EURESCY],
+	[EURESLV],
+	[EURESLT],
+	[EURESLU],
+	[EURESHU],
+	[EURESMT],
+	[EURESNL],
+	[EURESAT],
+	[EURESPL],
+	[EURESPT],
+	[EURESRO],
+	[EURESSI],
+	[EURESSK],
+	[EURESFI],
+	[EURESSE],
+	[EURESCH],
+	[EURESIS],
+	[EURESLI],
+	[EURESNO]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_EURES]);
+
+[EU Pilot_24c1cb39-2c52-f43a-8076-fd930cc8]:
+LOAD
+	[Performance Indicators PROF Qual],
+	[PROFBE],
+	[PROFBG],
+	[PROFCZ],
+	[PROFDK],
+	[PROFDE],
+	[PROFEE],
+	[PROFIE],
+	[PROFEL],
+	[PROFES],
+	[PROFFR],
+	[PROFHR],
+	[PROFIT],
+	[PROFCY],
+	[PROFLV],
+	[PROFLT],
+	[PROFLU],
+	[PROFHU],
+	[PROFMT],
+	[PROFNL],
+	[PROFAT],
+	[PROFPL],
+	[PROFPT],
+	[PROFRO],
+	[PROFSI],
+	[PROFSK],
+	[PROFFI],
+	[PROFSE]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_Pro_Qua]);
+
+[EU Pilot_1f2e0133-bf4e-b389-d8d6-bcfc5ae3]:
+LOAD
+	[Performance Indicators Trade],
+	[TradeBE],
+	[TradeBG],
+	[TradeCZ],
+	[TradeDK],
+	[TradeDE],
+	[TradeEE],
+	[TradeIE],
+	[TradeEL],
+	[TradeES],
+	[TradeFR],
+	[TradeHR],
+	[TradeIT],
+	[TradeCY],
+	[TradeLV],
+	[TradeLT],
+	[TradeLU],
+	[TradeHU],
+	[TradeMT],
+	[TradeNL],
+	[TradeAT],
+	[TradePL],
+	[TradePT],
+	[TradeRO],
+	[TradeSI],
+	[TradeSK],
+	[TradeFI],
+	[TradeSE]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_Trade_in_Goods]);
+
+[EU Pilot_ca0553c2-8d0a-68a0-eb74-559b5498]:
+LOAD
+	[Performance Indicators Public],
+	[PublicBE],
+	[PublicBG],
+	[PublicCZ],
+	[PublicDK],
+	[PublicDE],
+	[PublicEE],
+	[PublicIE],
+	[PublicEL],
+	[PublicES],
+	[PublicFR],
+	[PublicHR],
+	[PublicIT],
+	[PublicCY],
+	[PublicLV],
+	[PublicLT],
+	[PublicLU],
+	[PublicHU],
+	[PublicMT],
+	[PublicNL],
+	[PublicAT],
+	[PublicPL],
+	[PublicPT],
+	[PublicRO],
+	[PublicSI],
+	[PublicSK],
+	[PublicFI],
+	[PublicSE],
+	[PublicIS],
+	[PublicLI],
+	[PublicNO]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_Public_Proc]);
+
+[Tr Performance Overview Ecertis]:
+LOAD
+	[Performance Indicators eCertis],
+	[eCertisBE],
+	[eCertisBG],
+	[eCertisCZ],
+	[eCertisDK],
+	[eCertisDE],
+	[eCertisEE],
+	[eCertisIE],
+	[eCertisEL],
+	[eCertisES],
+	[eCertisFR],
+	[eCertisHR],
+	[eCertisIT],
+	[eCertisCY],
+	[eCertisLV],
+	[eCertisLT],
+	[eCertisLU],
+	[eCertisHU],
+	[eCertisMT],
+	[eCertisNL],
+	[eCertisAT],
+	[eCertisPL],
+	[eCertisPT],
+	[eCertisRO],
+	[eCertisSI],
+	[eCertisSK],
+	[eCertisFI],
+	[eCertisSE],
+	[eCertisIS],
+	[eCertisLI],
+	[eCertisNO]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [TL_Ecertis]);
+
+[Sub indicator exclusion (1)]:
+LOAD
+	[Sub indicator exclusion grounds],
+	[subex1AT],
+	[subex1BE],
+	[subex1BG],
+	[subex1CY],
+	[subex1CZ],
+	[subex1DE],
+	[subex1DK],
+	[subex1EE],
+	[subex1EL],
+	[subex1ES],
+	[subex1FI],
+	[subex1FR],
+	[subex1HR],
+	[subex1HU],
+	[subex1IE],
+	[subex1IS],
+	[subex1IT],
+	[subex1LI],
+	[subex1LT],
+	[subex1LU],
+	[subex1LV],
+	[subex1MT],
+	[subex1NL],
+	[subex1NO],
+	[subex1PL],
+	[subex1PT],
+	[subex1RO],
+	[subex1SE],
+	[subex1SI],
+	[subex1SK]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [Ecertis_Subindicator_exclusion1]);
+
+[Sub indicator selection (1)]:
+LOAD
+	[Sub indicator selection grounds],
+	[subse1AT],
+	[subse1BE],
+	[subse1BG],
+	[subse1CY],
+	[subse1CZ],
+	[subse1DE],
+	[subse1DK],
+	[subse1EE],
+	[subse1EL],
+	[subse1ES],
+	[subse1FI],
+	[subse1FR],
+	[subse1HR],
+	[subse1HU],
+	[subse1IE],
+	[subse1IS],
+	[subse1IT],
+	[subse1LI],
+	[subse1LT],
+	[subse1LU],
+	[subse1LV],
+	[subse1MT],
+	[subse1NL],
+	[subse1NO],
+	[subse1PL],
+	[subse1PT],
+	[subse1RO],
+	[subse1SE],
+	[subse1SI],
+	[subse1SK]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [Ecertis_Subindicator_selection1]);
+
+[Sub indicator exclusion (2)]:
+LOAD
+	[Sub indicator exclusion grounds 2],
+	[subex2AT],
+	[subex2BE],
+	[subex2BG],
+	[subex2CY],
+	[subex2CZ],
+	[subex2DE],
+	[subex2DK],
+	[subex2EE],
+	[subex2EL],
+	[subex2ES],
+	[subex2FI],
+	[subex2FR],
+	[subex2HR],
+	[subex2HU],
+	[subex2IE],
+	[subex2IS],
+	[subex2IT],
+	[subex2LI],
+	[subex2LT],
+	[subex2LU],
+	[subex2LV],
+	[subex2MT],
+	[subex2NL],
+	[subex2NO],
+	[subex2PL],
+	[subex2PT],
+	[subex2RO],
+	[subex2SE],
+	[subex2SI],
+	[subex2SK]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [Ecertis_Subindicator_exclusion2]);
+
+[Sub indicator selection (2)]:
+LOAD
+	[Sub indicator selection grounds 2],
+	[subse2AT],
+	[subse2BE],
+	[subse2BG],
+	[subse2CY],
+	[subse2CZ],
+	[subse2DE],
+	[subse2DK],
+	[subse2EE],
+	[subse2EL],
+	[subse2ES],
+	[subse2FI],
+	[subse2FR],
+	[subse2HR],
+	[subse2HU],
+	[subse2IE],
+	[subse2IS],
+	[subse2IT],
+	[subse2LI],
+	[subse2LT],
+	[subse2LU],
+	[subse2LV],
+	[subse2MT],
+	[subse2NL],
+	[subse2NO],
+	[subse2PL],
+	[subse2PT],
+	[subse2RO],
+	[subse2SE],
+	[subse2SI],
+	[subse2SK]
+ FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is [Ecertis_Subindicator_selection2]);
+
+SOLVIT1:
+LOAD [SOLVIT] as [SOLVIT1],
+	[GT_SOL_HOM_CEN_IND2.2021],
+    [GT_SOL_HOM_CEN_IND2.2021] as [solvit1_GT_SOL_HOM_CEN_IND2.2021]
+RESIDENT GT_SOL_HOM_PREP_TIME_2;
+LEFT JOIN
+LOAD [SOLVIT] as [SOLVIT1],
+	[GT_SOL_HOM_FIR_IND1.2021],
+    [GT_SOL_HOM_FIR_IND1.2021] as [solvit1_GT_SOL_HOM_FIR_IND1.2021]
+RESIDENT GT_SOL_HOM_FIR_RES_1;
+
+GT_TRA_IND3:
+LOAD
+    Countries,
+    Value as GT_TRA_IND_3_value    
+FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is GT_TRA_TL_IND3);
+//where Countries <> 'Avg';
+
+TL_GT_lastyear:
+LOAD
+    Countries,
+    Transposition,
+    Infringements,
+    "EU Pilot",
+    IMI,
+    "e-Certis",
+    EURES,
+    "Your Europe",
+    SOLVIT
+FROM [lib://SMS/TL_PO.xlsx]
+(ooxml, embedded labels, table is TL_GT);
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////Data Load from Csv//////////////////////////////////////////
+
+TESTETRA:
+LOAD
+[x1val] as TRAIND1,
+[y1val] as TRAIND1VAL,
+[y2val] AS TRAIND1LY
+where [x1val]<> 'Edition' and [x1val]<> 'UK';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+TESTETRA2:
+LOAD
+[x1val] as TRAIND2,
+[y1val] as TRAIND2VAL,
+[y2val] AS TRAIND2LY
+where [x1val]<> 'Edition' and [x1val]<> 'UK';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+TESTETRA4:
+LOAD
+[x1val] as TRAIND4,
+[y1val] as TRAIND4VAL,
+[y2val] AS TRAIND4LY
+where [x1val]<> 'Edition' and [x1val]<> 'UK';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_4.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+TESTETRA5:
+LOAD
+[x1val] as TRAIND5,
+[y1val] as TRAIND5VAL,
+[y2val] AS TRAIND5LY
+where [x1val]<> 'Edition' and [x1val]<> 'UK';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_5.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+TESTEINF3:
+LOAD
+[x1val] as INFIND3,
+[y1val] AS INFIND3VAL,
+[y2val] as INFIND3LY
+where [x1val]<> 'Edition' and [x1val]<> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_3.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+TESTEINF4:
+LOAD
+[x1val] as INFIND4,
+[y1val] AS INFIND4VAL,
+[y2val] as INFIND4LY
+
+where [x1val]<> 'Edition' and [x1val]<> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_4.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+INT_IMI:
+LOAD [IMI],[GT_IMI_TOT_REC_1A_2021] AS val_int_imi
+RESIDENT GT_IMI_TOT_REC_1A;
+concatenate
+LOAD [IMI],[GT_IMI_ACC_2B_2021] AS val_int_imi2
+RESIDENT GT_IMI_ACC_2B;
+
+INT_IMI2:
+LOAD [IMI],[GT_IMI_REQ_REC_3A_2021] AS val_int_imi3
+RESIDENT [GT_IMI_REQ_REC_3A];
+concatenate
+LOAD [IMI],[GT_IMI_ANS_IND3.2021] AS val_int_imi4
+RESIDENT GT_IMI_ANS_3B;
+//////////////////////////////////////////////////////////////////////////
+////////////////////////////AllMetrics//////////////////////////////////////////
+
+ALLMETRICS_SOLVIT:
+LOAD [SOLVIT1],'indicator 1' as indicator,[GT_SOL_HOM_FIR_IND1.2021] AS value
+RESIDENT SOLVIT1;
+Concatenate
+LOAD [SOLVIT],'indicator 2' as indicator,[GT_SOL_HOM_CEN_IND2.2021] AS value
+RESIDENT GT_SOL_HOM_PREP_TIME_2;
+Concatenate
+LOAD [SOLVIT],'indicator 3' as indicator,[GT_SOL_HOM_ACC_IND3.2021] AS value
+RESIDENT GT_SOL_HOM_TIM_TO_ACC_3;
+Concatenate
+LOAD [SOLVIT],'indicator 4' as indicator,[GT_SOL_HOM_NOT_ACC_IND4.2021] AS value
+RESIDENT GT_SOL_HOM_TIM_TO_NOT_ACC_4;
+Concatenate
+LOAD [SOLVIT],'indicator 5' as indicator,[GT_SOL_LEA_TIM_IND5.2021] AS value
+RESIDENT GT_SOL_LEA_TIM_TO_ACC_5;
+Concatenate
+LOAD [SOLVIT],'indicator 6' as indicator,[GT_SOL_LEA_RES_IND6.2021] AS value
+RESIDENT GT_SOL_LEA_RES_TIM_6;
+Concatenate
+LOAD [SOLVIT],'indicator 7' as indicator,[GT_SOL_RES_RAT_IND7.2021] AS value
+RESIDENT GT_SOL_RES_RAT_COU_7;
+
+ALLMETRICS_TRANS:
+LOAD TRAIND1 as [Transposition],'indicator 1' as indicatorT,TRAIND1VAL AS value, TRAIND1LY as lastyear
+RESIDENT TESTETRA;
+Concatenate
+LOAD TRAIND2 as [Transposition],'indicator 2' as indicatorT,TRAIND2VAL AS value, TRAIND2LY as lastyear
+RESIDENT TESTETRA2;
+Concatenate
+LOAD Countries as [Transposition],'indicator 3' as indicatorT,GT_TRA_IND_3_value AS value, '0' as lastyear
+RESIDENT GT_TRA_IND3;
+Concatenate
+LOAD TRAIND4 as [Transposition],'indicator 4' as indicatorT,TRAIND4VAL AS value, TRAIND4LY as lastyear
+RESIDENT TESTETRA4;
+Concatenate
+LOAD TRAIND5 as [Transposition],'indicator 5' as indicatorT,TRAIND5VAL AS value, TRAIND5LY as lastyear
+RESIDENT TESTETRA5;
+
+
+ALLMETRICS_INF:
+LOAD [Infringements],'indicator 1' as indicatorI,[GT_INF_IND_1.2021] AS valueI, [GT_INF_IND_1.2020] as lastyearI
+RESIDENT GT_INF_IND_1;
+Concatenate
+LOAD [Infringements],'indicator 2' as indicatorI,[GT_INF_IND_2.2021] AS valueI, [GT_INF_IND_2.2020] as lastyearI1
+RESIDENT GT_INF_IND_2;
+Concatenate
+//LOAD [Infringements],'indicator 3' as indicatorI,[GT_INF_IND_3.2021] AS valueI, [GT_INF_IND_3.2020] as lastyearI2
+//RESIDENT GT_INF_IND_3_UPD;
+LOAD INFIND3 as [Infringements],'indicator 3' as indicatorI,INFIND3VAL AS valueI, INFIND3LY as lastyearI2
+RESIDENT TESTEINF3;
+Concatenate
+//LOAD [Infringements4] as [Infringements],'indicator 4' as indicatorI,[GT_INF_IND_4.2021] AS valueI, [GT_INF_IND_4.2020] as lastyearI3
+//RESIDENT GT_INF_IND_4_UPD;
+LOAD INFIND4 as [Infringements],'indicator 4' as indicatorI,INFIND4VAL AS valueI, INFIND4LY as lastyearI3
+RESIDENT TESTEINF4;
+
+ALLMETRICS_IMI:
+LOAD [IMI],'indicator 1' as indicatorIMI,(SUM(val_int_imi2)*100/SUM(val_int_imi)) AS valueIMI
+RESIDENT INT_IMI
+GROUP BY IMI;
+Concatenate
+LOAD [IMI],'indicator 2' as indicatorIMI,[GT_IMI_SPE_2B_2021] AS valueIMI
+RESIDENT GT_IMI_SPE_2B;
+Concatenate
+LOAD [IMI],'indicator 3' as indicatorIMI,(SUM(val_int_imi4)*100/SUM(val_int_imi3)) AS valueIMI
+RESIDENT INT_IMI2
+GROUP BY IMI;
+Concatenate
+LOAD [IMI],'indicator 4' as indicatorIMI,(([GT_IMI_TIM_IND4.Dissatisfied_2020] + [GT_IMI_TIM_IND4.Very dissatisfied_2020])/([GT_IMI_TIM_IND4.Neutral_2020]+[GT_IMI_TIM_IND4.Satisfied_2020]+[GT_IMI_TIM_IND4.Very satisfied_2020]+[GT_IMI_TIM_IND4.Dissatisfied_2020] + [GT_IMI_TIM_IND4.Very dissatisfied_2020]))*100 AS valueIMI
+RESIDENT GT_IMI_TIM_4;
+Concatenate
+LOAD [IMI],'indicator 5' as indicatorIMI,(([GT_IMI_EFF_IND5.Dissatisfied_2020] + [GT_IMI_EFF_IND5.Very dissatisfied_2020])/([GT_IMI_EFF_IND5.Dissatisfied_2020] + [GT_IMI_EFF_IND5.Very dissatisfied_2020]+[GT_IMI_EFF_IND5.Neutral_2020]+[GT_IMI_EFF_IND5.Satisfied_2020]+[GT_IMI_EFF_IND5.Very satisfied_2020]))*100 AS valueIMI
+RESIDENT GT_IMI_EFF_5;
+
+ALLMETRICS_EUR:
+LOAD [GT_EUR_QUA_IND1_Edition] as [EUR],'indicator 1' as indicatorEUR,[GT_EUR_QUA_IND1.2018] AS valueEUR
+RESIDENT GT_EUR_QUA_IND1;
+Concatenate
+LOAD [EURES] as [EUR],'indicator 2' as indicatorEUR,[GT_EUR_IT_COM_IND2.2020] AS valueEUR
+RESIDENT GT_EUR_IT_COM_2;
+Concatenate
+LOAD [EURES] as [EUR],'indicator 3' as indicatorEUR,[GT_EUR_LAB_MAR_IND3.2020] AS valueEUR
+RESIDENT GT_EUR_LAB_MAR_3;
+Concatenate
+LOAD [EURES] as [EUR],'indicator 4' as indicatorEUR,[GT_EUR_USE_SAT_IND4.2020] AS valueEUR
+RESIDENT GT_EUR_USE_SAT_4;
+Concatenate
+LOAD [EURES] as [EUR],'indicator 5' as indicatorEUR,[GT_EUR_JOB_PLA_IND5.2020] AS valueEUR
+RESIDENT GT_EUR_JOB_PLA_5;
+
+ALLMETRICS_Ecertis:
+LOAD [eCertis],'EG-CC' as indicatorEcer1,[GT_ECE_EG_CC_IND1.2021] AS valueEcer1, 'criteria completeness [1]' as IndicatorGROUP
+RESIDENT GT_ECE_EG_CC_1;
+Concatenate
+LOAD [eCertis],'EG_PT' as indicatorEcer1,[GT_ECE_EG_PT_IND1.2021] AS valueEcer1, 'criteria completeness [1]' as IndicatorGROUP
+RESIDENT GT_ECE_EG_PT_1;
+Concatenate
+LOAD [eCertis],'EG_INS' as indicatorEcer1,[GT_ECE_EG_INS_IND1.2021] AS valueEcer1, 'criteria completeness [1]' as IndicatorGROUP
+RESIDENT GT_ECE_EG_INS_1;
+Concatenate
+LOAD [eCertis],'EG-CC' as indicatorEcer2,[GT_ECE_EG_CC_IND2.2021] AS valueEcer2, 'evidence completeness [2]' as IndicatorGROUP
+RESIDENT GT_ECE_EG_CC_2;
+Concatenate
+LOAD [eCertis],'EG_PT' as indicatorEcer2,[GT_ECE_EG_PT_IND2.2021] AS valueEcer2, 'evidence completeness [2]' as IndicatorGROUP
+RESIDENT GT_ECE_EG_PT_2;
+Concatenate
+LOAD [eCertis],'EG_INS' as indicatorEcer2,[GT_ECE_EG_INS_IND2.2021] AS valueEcer2, 'evidence completeness [2]' as IndicatorGROUP
+RESIDENT GT_ECE_EG_INS_2;
+Concatenate
+LOAD [eCertis],'SC_EF' as indicatorEcer3,[GT_ECE_SC_EF_IND1.2021] AS valueEcer3, 'criteria completeness [1]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_EF_1;
+Concatenate
+LOAD [eCertis],'SC_QA' as indicatorEcer3,[GT_ECE_SC_QA_IND1.2021] AS valueEcer3, 'criteria completeness [1]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_QA_1;
+Concatenate
+LOAD [GT_ECE_SC_ST_IND1_Edition] as [eCertis],'SC_ST' as indicatorEcer3,[GT_ECE_SC_ST_IND1.2021] AS valueEcer3, 'criteria completeness [1]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_ST_IND1;
+Concatenate
+LOAD [eCertis],'SC_TP' as indicatorEcer3,[GT_ECE_SC_TP_IND1.2021] AS valueEcer3, 'criteria completeness [1]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_TP_1;
+Concatenate
+LOAD [eCertis],'SC_EF' as indicatorEcer4,[GT_ECE_SC_EF_IND2.2021] AS valueEcer4, 'evidence completeness [2]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_EF_2;
+Concatenate
+LOAD [eCertis] AS [eCertis],'SC_QA' as indicatorEcer4,[GT_ECE_SC_QA_IND2.2021] AS valueEcer4, 'evidence completeness [2]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_QA_2;
+Concatenate
+LOAD [eCertis] as [eCertis],'SC_ST' as indicatorEcer4,[GT_ECE_SC_ST_IND2.2021] AS valueEcer4, 'evidence completeness [2]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_ST_2;
+Concatenate
+LOAD [eCertis] as [eCertis],'SC_TP' as indicatorEcer4,[GT_ECE_SC_TP_IND2.2021] AS valueEcer4, 'evidence completeness [2]' as IndicatorGROUP
+RESIDENT GT_ECE_SC_TP_2;
+
+ALLMETRICS_ALL:
+LOAD [eCertis] as EC,indicatorEcer1 as indicatorEcer,valueEcer1 AS valueEcer, IndicatorGROUP as GROUP
+RESIDENT ALLMETRICS_Ecertis;
+Concatenate
+LOAD [eCertis] as EC,indicatorEcer2 as indicatorEcer,valueEcer2 AS valueEcer, IndicatorGROUP as GROUP
+RESIDENT ALLMETRICS_Ecertis;
+Concatenate
+LOAD [eCertis] as EC,indicatorEcer3 as indicatorEcer,valueEcer3 AS valueEcer, IndicatorGROUP as GROUP
+RESIDENT ALLMETRICS_Ecertis;
+Concatenate
+LOAD [eCertis] as EC,indicatorEcer4 as indicatorEcer,valueEcer4 AS valueEcer, IndicatorGROUP as GROUP
+RESIDENT ALLMETRICS_Ecertis;
+
+ALLMETRICS_EUP:
+LOAD [EU Member States] AS EUP, 'Average response time' as indicatorEUP, [GT_EUP_IND1.2020] as valueEUP
+RESIDENT GT_EU_PIL_IND_1;
+
+//////////////////////////////////////////////////////////////////////////
+////////////////////////////AVG//////////////////////////////////////////
+Avg_TRA:
+LOAD TRAIND1 as AVGTra_Label, TRAIND1VAL as valAvgTra1
+RESIDENT TESTETRA
+where TRAIND1='Avg';
+Left Join
+LOAD TRAIND2 as AVGTra_Label, TRAIND2VAL as valAvgTra2
+RESIDENT TESTETRA2
+where TRAIND2='Avg';
+Left Join
+LOAD TRAIND4 as AVGTra_Label, TRAIND4VAL as valAvgTra4
+RESIDENT TESTETRA4
+where TRAIND4='Avg';
+Left Join
+LOAD TRAIND5 as AVGTra_Label, TRAIND5VAL as valAvgTra5
+RESIDENT TESTETRA5
+where TRAIND5='Avg';
+
+resAvgTra4=Peek('valAvgTra4',0,'Avg_TRA');
+resAvgTra5=Peek('valAvgTra5',0,'Avg_TRA');
+
+
+Avg_INF:
+LOAD [Infringements] as AVGINF_Label, [GT_INF_IND_1.2021] as valAvgINF1
+RESIDENT GT_INF_IND_1
+where [Infringements]='Avg';
+LEFT JOIN
+LOAD [Infringements] as AVGINF_Label, [GT_INF_IND_2.2021] as valAvgINF2
+RESIDENT GT_INF_IND_2
+where [Infringements]='Avg';
+LEFT JOIN
+LOAD INFIND3 as AVGINF_Label, INFIND3VAL as valAvgINF3
+RESIDENT TESTEINF3
+where INFIND3='Avg';
+LEFT JOIN
+LOAD INFIND4 as AVGINF_Label, INFIND4VAL as valAvgINF4
+RESIDENT TESTEINF4
+where INFIND4='Avg';
+
+resAvgInf1=Peek('valAvgINF1',0,'Avg_INF');
+resAvgInf3=Peek('valAvgINF3',0,'Avg_INF');
+
+//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////AVG////////////////////////////////////
+//////////////////////////////INF//////////////////////////////////////
+AVG_INF_IND2:
+LOAD [x1val] as AvgInf2, [y1val] as valAvgInf2
+Where [x1val]='Avg' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_2.csv';
+SQL SELECT
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+AVG_INF_IND3:
+LOAD [x1val] as AvgInf3, [y1val] as valAvgInf3
+Where [x1val]='Avg' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_3.csv';
+SQL SELECT
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+AVG_INF_IND4:
+LOAD [x1val] as AvgInf4, [y1val] as valAvgInf4
+Where [x1val]='Avg' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_IND_4.csv';
+SQL SELECT
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+AVG_INF_DUR_BY_SEC:
+LOAD
+	[x1val] AS AvgInfSec,
+    [x2val] AS valAvgSec
+    where [x1val] = 'Avg' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_INF_DUR_BY_SEC.csv';
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+AVG_TRA_IND2:
+LOAD [x1val] as AvgTra2, 
+	 [y1val] as valAvgTra
+Where [x1val]='Avg' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_IND_2.csv';
+SQL SELECT
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+AVG_TRA_COM_CHE:
+LOAD
+	[x1val] AS AvgcomChe,[y1val] AS valAVGcomChe
+    where [x1val] = 'Avg' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_TRA_COM_CHE.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+//////////////////////////////////////////////////////////////////////////
+
+PO_Ecertis:
+LOAD [eCertis] as EcPO, if( valueEcer1 >= 50,'1',if(valueEcer1 <= 0 ,'-1','0')) as val_EcePO
+RESIDENT ALLMETRICS_Ecertis;
+Concatenate
+LOAD [eCertis] as EcPO, if( valueEcer3 >= 50,'1',if(valueEcer3 <= 0 ,'-1','0')) as val_EcePO
+RESIDENT ALLMETRICS_Ecertis;
+Concatenate
+LOAD [eCertis] as EcPO, if( valueEcer2 >= 1,'1',if(valueEcer2 = 0 ,'-1','0')) as val_EcePO
+RESIDENT ALLMETRICS_Ecertis;
+Concatenate
+LOAD [eCertis] as EcPO, if(valueEcer4 	= 0 ,'-1','1') as val_EcePO
+RESIDENT ALLMETRICS_Ecertis;
+
+INT_PO:
+LOAD 
+[Transposition] as INT_POT, 
+num(if( value <= 1 and indicatorT='indicator 1',1,
+	if(value > 1 and indicatorT='indicator 1',-1,
+		if( value > 0 and indicatorT='indicator 2',-1,
+        	if(value < 0 and indicatorT='indicator 2',1,
+				if( value =0 and indicatorT='indicator 3',0,
+                	if(value >0 and indicatorT='indicator 3',value,
+						if( value <($(resAvgTra4)*0.9) and indicatorT='indicator 4',1,
+                        	if(value >($(resAvgTra4)*1.1) and indicatorT='indicator 4',-1,
+								if( value <($(resAvgTra5)*0.9) and indicatorT='indicator 5',1,
+                                	if(value >($(resAvgTra5)*1.1) and indicatorT='indicator 5',-1,0
+))))))))))) as val_int_pot
+Resident ALLMETRICS_TRANS;
+
+Concatenate
+LOAD [Infringements] as INT_POI, 
+if( valueI <($(resAvgInf1)*0.9) and indicatorI='indicator 1',1,
+	if(valueI >($(resAvgInf1)*1.1) and indicatorI='indicator 1',-1,
+	if( valueI > 0 and indicatorI='indicator 2',-1,if(valueI < 0 and indicatorI='indicator 2',1,
+	if( valueI <($(resAvgInf3)*0.9) and indicatorI='indicator 3',1,if(valueI >($(resAvgInf3) *1.1) and indicatorI='indicator 3',-1,
+	if( valueI < 8 and indicatorI='indicator 4',1,if(valueI >18 and indicatorI='indicator 4',-1, 0
+)))))))) as val_int_poi
+RESIDENT ALLMETRICS_INF;
+Concatenate
+LOAD EUP as INT_POEUP, if(valueEUP <= 70, 1, if(valueEUP >=80, -1,0)) as val_int_poeup
+RESIDENT ALLMETRICS_EUP;
+Concatenate
+LOAD [IMI] as INT_POIMI, if( valueIMI >= 80 and indicatorIMI='indicator 1',1,if(valueIMI < 60 and indicatorIMI='indicator 1',-1,
+if( valueIMI < 16 and indicatorIMI='indicator 2',1,if(valueIMI > 25 and indicatorIMI='indicator 2',-1,
+if( valueIMI >= 80 and indicatorIMI='indicator 3',1,if(valueIMI < 60 and indicatorIMI='indicator 3',-1,
+if( valueIMI < 4.5 and indicatorIMI='indicator 4',1,if(valueIMI >= 15 and indicatorIMI='indicator 4',-1,
+if( valueIMI < 4.5 and indicatorIMI='indicator 5',1,if(valueIMI >= 15 and indicatorIMI='indicator 5',-1,0)))))))))) as val_int_poimi
+Resident ALLMETRICS_IMI;
+CONCATENATE
+LOAD [EcPO] as INT_POEC, if(SUM(val_EcePO)>=6,1,if(SUM(val_EcePO)=-13,-1,0)) as val_int_poec
+RESIDENT PO_Ecertis
+GROUP BY EcPO;
+CONCATENATE
+LOAD [EUR] as INT_POEUR, if(valueEUR='null',0,if( valueEUR >= 7 and indicatorEUR='indicator 1',100,if(valueEUR <= 3 and indicatorEUR='indicator 1',50,
+if( valueEUR =2 and indicatorEUR='indicator 2',100,if(valueEUR =0 and indicatorEUR='indicator 2',50,
+if( valueEUR >50 and indicatorEUR='indicator 3',100,if(valueEUR <= 20 and indicatorEUR='indicator 3',50,
+if( valueEUR >= 7 and indicatorEUR='indicator 4',100,if(valueEUR 	<= 3 and indicatorEUR='indicator 4',50,
+if( valueEUR > 4 and indicatorEUR='indicator 5',100,if(valueEUR 	< 2 and indicatorEUR='indicator 4',50,
+75
+))))))))))) as val_int_poeur
+RESIDENT ALLMETRICS_EUR
+where [EUR] <> 'CH';
+Concatenate
+LOAD [CIT_Business-CIT_Country] as INT_POyeu, If(value >= 1000 , 2, 0) as val_int_poeyeu
+RESIDENT ALLMETRICS_YEU;
+Concatenate
+LOAD [SOLVIT] as INT_POS, If(value >= 75 , 1, If(value <= 55, -1,
+If(value >= 90 and indicator = 'indicator 7', 1, If(value < 70 and indicator = 'indicator 7', -1, 
+'#d0c131')))) as val_int_pos
+RESIDENT ALLMETRICS_SOLVIT;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Performance Overview//////////////////////////////////////
+
+INT_PO1:
+LOAD INT_POIMI as PO, 'IMI' as indicator_PO, SUM(val_int_poimi) as val_po
+RESIDENT INT_PO
+Group BY INT_POIMI;
+Concatenate
+LOAD INT_POI as PO, 'Infringements' as indicator_PO, SUM(val_int_poi) as val_po
+RESIDENT INT_PO
+Group BY INT_POI;
+Concatenate
+LOAD INT_POT as PO, 'Transposition' as indicator_PO, SUM(val_int_pot) as val_po
+RESIDENT INT_PO
+Group BY INT_POT;
+Concatenate
+LOAD INT_POEC as PO, 'Ecertis' as indicator_PO, val_int_poec as val_po
+RESIDENT INT_PO;
+Concatenate
+LOAD INT_POEUR as PO, 'Eures' as indicator_PO, SUM(val_int_poeur) as val_po
+RESIDENT INT_PO
+Group BY INT_POEUR;
+Concatenate
+LOAD INT_POyeu as PO, 'Your Europe' as indicator_PO, SUM(val_int_poeyeu) as val_po
+RESIDENT INT_PO
+Group BY INT_POyeu;
+Concatenate
+LOAD INT_POS as PO, 'SOLVIT' as indicator_PO, SUM(val_int_pos) as val_po
+RESIDENT INT_PO
+Group BY INT_POS;
+LEFT JOIN
+LOAD Countries as PO, 'Transposition' as indicator_PO, Transposition as lastyearT
+RESIDENT TL_GT_lastyear;
+LEFT JOIN
+LOAD Countries as PO, 'Infringements' as indicator_PO, Infringements as lastyearI
+RESIDENT TL_GT_lastyear;
+LEFT JOIN
+LOAD Countries as PO, 'IMI' as indicator_PO, IMI as lastyearIMI
+RESIDENT TL_GT_lastyear;
+LEFT JOIN
+LOAD Countries as PO, 'Ecertis' as indicator_PO, "e-Certis" as lastyearEc
+RESIDENT TL_GT_lastyear;
+LEFT JOIN
+LOAD Countries as PO, 'Eures' as indicator_PO, EURES as lastyearE
+RESIDENT TL_GT_lastyear;
+/*
+LEFT JOIN
+LOAD Countries as PO, 'Your Europe' as indicator_PO, "Your Europe" as lastyearYE
+RESIDENT TL_GT_lastyear;
+*/
+LEFT JOIN
+LOAD Countries as PO, 'SOLVIT' as indicator_PO, SOLVIT as lastyearS
+RESIDENT TL_GT_lastyear;
+
+//DROP TABLE INT_PO;
+DROP TABLE TL_GT_lastyear;
+
+RENAME TABLE [Sheet1_27ac310f-415b-ae2d-9311-ce084140] to [Sheet12];
+
+RENAME TABLE [Sheet1_b404f096-26e0-82de-a5cb-0381d5d3] to [Sheet1-1];
+RENAME TABLE [EU Pilot_50e52db4-8cb9-930b-676c-e6871fa8] to [EU Pilot];
+
+RENAME TABLE [EU Pilot_3968df60-5cd9-252f-2929-182c3f28] to [EU Pilot-1];
+
+RENAME TABLE [EU Pilot_1ef346c7-67e5-cb38-657d-9e9ddeda] to [EU Pilot-2];
+
+RENAME TABLE [EU Pilot_6eaf1a75-2eb8-251d-ffb1-0a5d512f] to [EU Pilot-3];
+
+RENAME TABLE [EU Pilot_24c1cb39-2c52-f43a-8076-fd930cc8] to [EU Pilot-4];
+
+RENAME TABLE [EU Pilot_1f2e0133-bf4e-b389-d8d6-bcfc5ae3] to [EU Pilot-5];
+
+RENAME TABLE [EU Pilot_ca0553c2-8d0a-68a0-eb74-559b5498] to [EU Pilot-6];

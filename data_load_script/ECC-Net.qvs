@@ -1,0 +1,85 @@
+///$tab ECC-Net 
+Set dataManagerTables = '','GT_ECC_NUM_OF_CON','GT_ECC_NUM_OF_COM','GT_ECC_PS_CON';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+Unqualify *;
+
+[GT_ECC_NUM_OF_CON2]:
+LOAD
+    [x1val] AS [GT_ECC_NUM_OF_CON_Year],
+    [x2val] AS [Number of contacts]
+    where [x1val] <> 'Year';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECC_NUM_OF_CON.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECC_NUM_OF_COM]:
+ 
+LOAD
+    [x1val] AS [Number of complaints],
+    [x2val] AS [Complaints]
+    where [x1val] <> 'Year';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECC_NUM_OF_COM.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECC_PS_CON]:
+Crosstable (Products_Services, Complaints_by_products_services)
+LOAD	
+	[x1val] as [GT_ECC_PS_Years],
+	[x2val] as [Health],
+	[x3val] as [Personal care goods and services],
+	[x4val] as [Communication],
+	[x5val] as [Audiovisual, photography and information processing equipment],
+	[x6val] as [Timeshare products and package holidays],
+	[x7val] as [Recreational, sporting and cultural services],
+	[x8val] as [Financial services and insurance],
+	[x9val] as [Hotels and restaurants],
+	[x10val] as [Clothing and footwear],
+	[x11val] as [Household equipment and maintenance],
+	[x12val] as [Transport]
+    where [x1val] <> 'Year';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECC_PS_CON.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val",
+	"x6val",
+	"x7val",
+	"x8val",
+	"x9val",
+	"x10val",
+	"x11val",
+	"x12val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+///////////////////////////////Table Adjusting///////////////////////////////////////

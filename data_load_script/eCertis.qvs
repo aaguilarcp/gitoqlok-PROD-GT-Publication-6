@@ -1,0 +1,511 @@
+///$tab eCertis
+Set dataManagerTables = '','GT_ECE_EG_CC_1','GT_ECE_EG_PT_1','GT_ECE_EG_INS_1','GT_ECE_SC_EF_1','GT_ECE_SG_EF_IND1','GT_ECE_SC_QA_1','GT_ECE_SG_QA_IND1','GT_ECE_SC_ST_IND1','GT_ECE_SG_ST_IND1','GT_ECE_SG_TP_IND1','GT_ECE_SC_TP_1','GT_ECE_EG_CC_2','GT_ECE_EG_PT_2','GT_ECE_EG_INS_2','GT_ECE_SC_EF_2','GT_ECE_SG_EF_IND2','GT_ECE_SC_QA_2','GT_ECE_SG_QA_IND2','GT_ECE_SC_ST_2','GT_ECE_SG_ST_IND2','GT_ECE_SC_TP_2','GT_ECE_SG_TP_IND2','GT_ECE_TRE_PER','GT_ECE_EVI_TYP','(GT_ECE_PER_ITE_EVI...)','GT_ECE_PER_ITE_EVI','GT_ECE_ITE_EVI_SAM','GT_ECE_TRE_PER','GT_ECE_EVI_TYP','(GT_ECE_PER_ITE_EVI...)','GT_ECE_PER_ITE_EVI','GT_ECE_ITE_EVI_SAM','GT_ECE_UNI_VIS_PER_MON','GT_ECE_PER_ITE_EVI','GT_ECE_ITE_EVI_SAM','GT_ECE_UNI_VIS_PER_MON-1','GT_ECE_SG_EF_1','GT_ECE_PRI_EVI';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_ECE_EG_CC_1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_EG_CC_IND1.2021],
+	[y2val] AS [GT_ECE_EG_CC_IND1.2020],
+	[y3val] AS [GT_ECE_EG_CC_IND1.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_EG_CC_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_EG_PT_1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_EG_PT_IND1.2021],
+	[y2val] AS [GT_ECE_EG_PT_IND1.2020],
+	[y3val] AS [GT_ECE_EG_PT_IND1.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_EG_PT_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_EG_INS_1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_EG_INS_IND1.2021],
+	[y2val] AS [GT_ECE_EG_INS_IND1.2020],
+	[y3val] AS [GT_ECE_EG_INS_IND1.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_EG_INS_1.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_EF_1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_EF_IND1.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_EF_1.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_EF_IND1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SG_EF_IND1.2020]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SG_EF_1.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_QA_1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_QA_IND1.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_QA_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_QA_IND1]:
+LOAD
+	[x1val] AS [GT_ECE_SG_QA_IND1_Edition],
+	[y1val] AS [GT_ECE_SG_QA_IND1.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SG_QA_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_ST_IND1]:
+LOAD
+	[x1val] AS [GT_ECE_SC_ST_IND1_Edition],
+	[y1val] AS [GT_ECE_SC_ST_IND1.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_ST_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_ST_IND1]:
+LOAD
+	[x1val] AS [GT_ECE_SG_ST_IND1_Edition],
+	[y1val] AS [GT_ECE_SG_ST_IND1.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SG_ST_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_TP_IND1]:
+LOAD
+	[x1val] AS [GT_ECE_SG_TP_IND1_Edition],
+	[y1val] AS [GT_ECE_SG_TP_IND1.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SG_TP_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_TP_1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_TP_IND1.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_TP_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_EG_CC_2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_EG_CC_IND2.2021],
+	[y2val] AS [GT_ECE_EG_CC_IND2.2020],
+	[y3val] AS [GT_ECE_EG_CC_IND2.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_EG_CC_2.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_EG_PT_2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_EG_PT_IND2.2021],
+	[y2val] AS [GT_ECE_EG_PT_IND2.2020],
+	[y3val] AS [GT_ECE_EG_PT_IND2.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_EG_PT_2.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_EG_INS_2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_EG_INS_IND2.2021],
+	[y2val] AS [GT_ECE_EG_INS_IND2.2020],
+	[y3val] AS [GT_ECE_EG_INS_IND2.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_EG_INS_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_EF_2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_EF_IND2.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_EF_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_EF_IND2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SG_EF_IND2.2021], 
+    [y2val] AS [GT_ECE_SG_EF_IND2.2020],
+    [y3val] AS [GT_ECE_SG_EF_IND2.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_EF_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+    "y2val",
+    "y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_QA_2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_QA_IND2.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_QA_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_QA_IND2]:
+LOAD
+	[x1val] AS [eCertis],
+    [y1val] AS [GT_ECE_SG_QA_IND2.2020]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_QA_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_ST_2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_ST_IND2.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_ST_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_ST_IND2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SG_ST_IND2.2021],
+    [y2val] AS [GT_ECE_SG_ST_IND2.2020],
+    [y3val] AS [GT_ECE_SG_ST_IND2.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_ST_2.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+     "y2val",
+    "y3val"  
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SC_TP_2]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_TP_IND2.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SG_TP_2.csv';
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_SG_TP_IND2]:
+LOAD
+	[x1val] AS [GT_ECE_SG_TP_IND2_Edition],
+	[y1val] AS [GT_ECE_SG_TP_IND2.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SC_TP_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_TRE_PER]:
+Crosstable (Years, Percentages)
+LOAD
+	[x1val] AS [GT_ECE_TRE_PER_Category],
+	[y1val] AS [2016/2017],
+	[y2val] AS [2017/2018],
+	[y3val] AS [2018/2019],
+	[y4val] AS [2019/2020],
+    [y5val] AS [2020/2021]
+    where [x1val] <> 'Year';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_TRE_PER.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+    "y5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_EVI_TYP]:
+LOAD
+	[x1val] AS [GT_ECE_EVI_TYP_Type],
+	[x2val] AS [GT_ECE_EVI_TYP.Country],
+	[y1val] AS [GT_ECE_EVI_TYP.2021],
+	[y2val] AS [GT_ECE_EVI_TYP.2020],
+	[y3val] AS [GT_ECE_EVI_TYP.2019]
+    where [x1val] <> 'Type' and [x2val] <> 'UK';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_EVI_TYP.csv';
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_PER_ITE_EVI]:
+LOAD
+	[x1val] AS [GT_ECE_PER_ITE_EVI_x1val],
+	[y1val] AS [GT_ECE_PER_ITE_EVI.2020],
+	[y2val] AS [GT_ECE_PER_ITE_EVI.2019],
+	[y3val] AS [GT_ECE_PER_ITE_EVI.2018]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_PER_ITE_EVI.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_UNI_VIS_PER_MON]:
+LOAD
+	[x1val] AS [GT_ECE_UNI_VIS_PER_MON_Month],
+	[y1val] AS [GT_ECE_UNI_VIS_PER_MON.2019],
+    [y2val] AS [GT_ECE_UNI_VIS_PER_MON.2020]  //05052020  usually y1val is the max year
+    where [x1val] <> 'MONTH';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_UNI_VIS_PER_MON.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+     "y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source"; 
+
+
+
+[GT_ECE_UNI_VIS_PER_MON_temp_dad520c0-9050-9121-3690-631bb70a]:
+LOAD
+	[GT_ECE_UNI_VIS_PER_MON_Month] AS [Unique visitors to eCertis - per month],
+	[GT_ECE_UNI_VIS_PER_MON.2020]
+RESIDENT [GT_ECE_UNI_VIS_PER_MON];
+DROP TABLE [GT_ECE_UNI_VIS_PER_MON];
+
+RENAME TABLE [GT_ECE_UNI_VIS_PER_MON_temp_dad520c0-9050-9121-3690-631bb70a] to [GT_ECE_UNI_VIS_PER_MON];
+
+
+[GT_ECE_PER_ITE_EVI]:
+LOAD
+	[x1val] AS [eCertis],
+    [y1val] AS [GT_ECE_PER_ITE_EVI.2021_2],
+	[y2val] AS [GT_ECE_PER_ITE_EVI.2020_2],
+	[y3val] AS [GT_ECE_PER_ITE_EVI.2019_2]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_PER_ITE_EVI.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+    "y3val" 
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_ITE_EVI_SAM]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_ITE_EVI_SAM.2021],
+	[y2val] AS [GT_ECE_ITE_EVI_SAM.2020],
+	[y3val] AS [GT_ECE_ITE_EVI_SAM.2019]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_ITE_EVI_SAM.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_UNI_VIS_PER_MON_0ee92a62-86bd-cff2-4480-f5764a93]:
+LOAD
+	[x1val] AS [GT_ECE_UNI_VIS_PER_MON-1.GT_ECE_UNI_VIS_PER_MON_Month],
+	[y2val] AS [GT_ECE_UNI_VIS_PER_MON-1.2019]
+    where [x1val] <> 'MONTH';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_UNI_VIS_PER_MON.csv';
+
+SQL SELECT 
+	"x1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+RENAME TABLE [GT_ECE_UNI_VIS_PER_MON_0ee92a62-86bd-cff2-4480-f5764a93] to [GT_ECE_UNI_VIS_PER_MON-1];
+
+[GT_ECE_SG_EF_1]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_SC_QA_IND1_UPD.2020]  // 05052021 still data 2020
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_SG_EF_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_PRI_EVI]:
+LOAD
+	[x1val] AS [eCertis],
+	[y1val] AS [GT_ECE_PRI_EVI.2021],
+	[y2val] AS [GT_ECE_PRI_EVI.2020]
+    where [x1val] <> 'Counry' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_ECE_PRI_EVI.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_ECE_TRE_PER_temp_fa0d28ea-f96f-9d71-42dc-36422ff6]:
+LOAD
+	[Years] AS [GT_ECE_TRE_PER.Years],
+	[GT_ECE_TRE_PER_Category],
+	[Percentages]
+RESIDENT [GT_ECE_TRE_PER];
+DROP TABLE [GT_ECE_TRE_PER];
+RENAME TABLE [GT_ECE_TRE_PER_temp_fa0d28ea-f96f-9d71-42dc-36422ff6] to [GT_ECE_TRE_PER];
+
+[GT_ECE_TRE_PER_temp_fa0d28ea-f96f-9d71-42dc-36422ff7]:
+LOAD
+	[GT_ECE_TRE_PER.Years] AS [Years],
+	[GT_ECE_TRE_PER_Category],
+	[Percentages]
+RESIDENT [GT_ECE_TRE_PER];
+DROP TABLE [GT_ECE_TRE_PER];
+RENAME TABLE [GT_ECE_TRE_PER_temp_fa0d28ea-f96f-9d71-42dc-36422ff7] to [GT_ECE_TRE_PER];

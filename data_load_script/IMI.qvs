@@ -1,0 +1,439 @@
+///$tab IMI
+Set dataManagerTables = '','GT_IMI_TIM_4','GT_IMI_EFF_5','GT_IMI_ALL_EXC','GT_IMI_REQ_2C','GT_IMI_SPE_2D','GT_IMI_TOT_REC_1A','GT_IMI_ACC_2B','GT_IMI_REQ_2A','GT_IMI_SPE_2B','GT_IMI_REQ_2E','GT_IMI_SPE_2F','GT_IMI_REQ_2G','GT_IMI_SPE_2H','GT_IMI_REQ_2I','GT_IMI_SPE_2K','GT_IMI_REQ_REC_3A','GT_IMI_REQ_QUA','GT_IMI_REQ_MS','GT_IMI_REQ_REC_MS','GT_IMI_ANS_3B';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_IMI_TIM_4]:
+//Data is updated, labels name as last year
+LOAD
+	[x1val] AS [IMI],
+	[x2val] AS [GT_IMI_TIM_IND4.Very satisfied_2020],
+	[x3val] AS [GT_IMI_TIM_IND4.Satisfied_2020],
+	[x4val] AS [GT_IMI_TIM_IND4.Neutral_2020],
+	[x5val] AS [GT_IMI_TIM_IND4.Dissatisfied_2020],
+	[x6val] AS [GT_IMI_TIM_IND4.Very dissatisfied_2020],
+	[x7val] AS [Very satisfied_2019],
+	[x8val] AS [GT_IMI_TIM_IND4.Satisfied_2019],
+	[x9val] AS [GT_IMI_TIM_IND4.Neutral_2019],
+	[x10val] AS [GT_IMI_TIM_IND4.Dissatisfied_2019],
+	[x11val] AS [GT_IMI_TIM_IND4.Very dissatisfied_2019],
+	[x12val] AS [GT_IMI_TIM_IND4.Very satisfied_2018],
+	[x13val] AS [GT_IMI_TIM_IND4.Satisfied_2018],
+	[x14val] AS [GT_IMI_TIM_IND4.Neutral_2018],
+	[x15val] AS [GT_IMI_TIM_IND4.Dissatisfied_2018],
+	[x16val] AS [Very dissatisfied_2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> 'Rating';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_TIM_4.csv';
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val",
+	"x6val",
+	"x7val",
+	"x8val",
+	"x9val",
+	"x10val",
+	"x11val",
+	"x12val",
+	"x13val",
+	"x14val",
+	"x15val",
+	"x16val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_EFF_5]:
+//Data is updated, labels name as last year
+LOAD
+	[x1val] AS [IMI],
+	[x2val] AS [GT_IMI_EFF_IND5.Very satisfied_2020],
+	[x3val] AS [GT_IMI_EFF_IND5.Satisfied_2020],
+	[x4val] AS [GT_IMI_EFF_IND5.Neutral_2020],
+	[x5val] AS [GT_IMI_EFF_IND5.Dissatisfied_2020],
+	[x6val] AS [GT_IMI_EFF_IND5.Very dissatisfied_2020],
+	[x7val] AS [Very satisfied1_2019],
+	[x8val] AS [GT_IMI_EFF_IND5.Satisfied_2019],
+	[x9val] AS [GT_IMI_EFF_IND5.Neutral_2019],
+	[x10val] AS [GT_IMI_EFF_IND5.Dissatisfied_2019],
+	[x11val] AS [GT_IMI_EFF_IND5.Very dissatisfied_2019],
+	[x12val] AS [GT_IMI_EFF_IND5.Very satisfied_2018],
+	[x13val] AS [GT_IMI_EFF_IND5.Satisfied_2018],
+	[x14val] AS [GT_IMI_EFF_IND5.Neutral_2018],
+	[x15val] AS [GT_IMI_EFF_IND5.Dissatisfied_2018],
+	[x16val] AS [Very dissatisfied2_2018]
+     where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> 'Rating';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_EFF_5.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val",
+	"x6val",
+	"x7val",
+	"x8val",
+	"x9val",
+	"x10val",
+	"x11val",
+	"x12val",
+	"x13val",
+	"x14val",
+	"x15val",
+	"x16val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_ALL_EXC]:
+CrossTable (GT_IMI_ALL_EXC_Edition,Exchanges)
+LOAD
+	[x1val] AS [Year],
+	[x2val] AS [Requests],
+	[x3val] AS [Repository entries],
+	[x4val] AS [SOLVIT cases],
+	[x5val] AS [Notifications],
+	[x6val] AS [Alerts],
+	[x7val] AS [EPC applications],
+	[x8val] AS [GDPR Cases],
+	[x9val] AS [NRMM type approvals]
+	where [x1val] <> 'Year';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_ALL_EXC.csv';
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val",
+	"x6val",
+	"x7val",
+	"x8val",
+	"x9val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_TOT_REC_1A]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_TOT_REC_1A_2021],
+	[y2val] AS [GT_IMI_TOT_REC_1A_2020],
+	[y3val] AS [GT_IMI_TOT_REC_1A_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_TOT_REC_1A.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_ACC_2B]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_ACC_2B_2021],
+	[y2val] AS [GT_IMI_ACC_2B_2020],
+	[y3val] AS [GT_IMI_ACC_2B_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_ACC_2B.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_2A]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_REQ_2A_2021],
+	[y2val] AS [GT_IMI_REQ_2A_2020],
+	[y3val] AS [GT_IMI_REQ_2A_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_2A.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_SPE_2B]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_SPE_2B_2021],
+	[y2val] AS [GT_IMI_SPE_2B_2020],
+	[y3val] AS [GT_IMI_SPE_2B_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_SPE_2B.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_2C]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_REQ_2C_2021],
+	[y2val] AS [GT_IMI_REQ_2C_2020],
+	[y3val] AS [GT_IMI_REQ_2C_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_2C.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_SPE_2D]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_SPE_2D_2021],
+	[y2val] AS [GT_IMI_SPE_2D_2020],
+	[y3val] AS [GT_IMI_SPE_2D_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_SPE_2D.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_IMI_REQ_2E]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_REQ_2E_2021],
+	[y2val] AS [GT_IMI_REQ_2E_2020],
+	[y3val] AS [GT_IMI_REQ_2E_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_2E.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_SPE_2F]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_SPE_2F_2021],
+	[y2val] AS [GT_IMI_SPE_2F_2020],
+	[y3val] AS [GT_IMI_SPE_2F_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_SPE_2F.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_2G]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_REQ_2G_2021],
+	[y2val] AS [GT_IMI_REQ_2G_2020],
+	[y3val] AS [GT_IMI_REQ_2G_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_2G.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_SPE_2H]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_SPE_2H_2021],
+	[y2val] AS [GT_IMI_SPE_2H_2020],
+	[y3val] AS [GT_IMI_SPE_2H_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_SPE_2H.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_2I]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_REQ_2I_2021],
+	[y2val] AS [GT_IMI_REQ_2I_2020]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_2I.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_SPE_2K]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_SPE_2K_2021],
+	[y2val] AS [GT_IMI_SPE_2K_2020]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_SPE_2K.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_REC_3A]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_REQ_REC_3A_2021],
+	[y2val] AS [GT_IMI_REQ_REC_3A_2020],
+	[y3val] AS [GT_IMI_REQ_REC_3A_2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_REC_3A.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_QUA]:
+Crosstable ([GT_IMI_REQ_QUA-1.GT_IMI_REQ_QUA_Label], Numbers)
+LOAD
+	[x1val] AS [Periods],
+	[x2val] AS [Professional qualifications],
+	[x3val] AS [Services],
+	[x4val] AS [Posting of workers],
+	[x5val] AS [Other areas]
+    where [x1val] <> 'Label';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_QUA.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val",
+	"x4val",
+	"x5val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_MS]:
+LOAD
+	[x1val] AS [GT_IMI_REQ_MS_Policy Area],
+	[x2val] AS [IMI],
+    [y1val] AS [GT_IMI_REQ_MS.2020],
+	[y2val] AS [GT_IMI_REQ_MS.2019],
+	[y3val] AS [GT_IMI_REQ_MS.2018]
+    where [x1val] <> 'Policy Area' and [x2val] <> 'UK' and [x2val] <> '';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"y1val",
+	"y2val",
+    "y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_IMI_REQ_REC_MS]:
+LOAD
+	[x1val] AS [GT_IMI_REQ_REC_MS_Policy Area],
+	[x2val] AS [IMI],
+	[y1val] AS [GT_IMI_REQ_REC_MS.2021],
+	[y2val] AS [GT_IMI_REQ_REC_MS.2020]
+    where [x1val] <> 'Policy Area' and [x2val] <> 'UK';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_REQ_REC_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_IMI_ANS_3B]:
+LOAD
+	[x1val] AS [IMI],
+	[y1val] AS [GT_IMI_ANS_IND3.2021],
+    [y2val] AS [GT_IMI_ANS_IND3.2020],
+	[y3val] AS [GT_IMI_ANS_IND3.2019],
+	[y4val] AS [GT_IMI_ANS_IND3.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_IMI_ANS_3B.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+///////////////////////////////Table Adjusting///////////////////////////////////////
+
+[GT_IMI_ALL_EXC_temp_4415abdc-d11d-4678-2719-9afccf31]:
+LOAD
+	[Year] AS [GT_IMI_ALL_EXC.Year],
+	[GT_IMI_ALL_EXC_Edition],
+	[Exchanges]
+RESIDENT [GT_IMI_ALL_EXC];
+DROP TABLE [GT_IMI_ALL_EXC];
+
+RENAME TABLE [GT_IMI_ALL_EXC_temp_4415abdc-d11d-4678-2719-9afccf31] to [GT_IMI_ALL_EXC];
+
+[GT_IMI_ALL_EXC_temp_73466899-8cb9-f55c-52bb-c1e0e782]:
+LOAD
+	[GT_IMI_ALL_EXC_Edition],
+	[Exchanges],
+	[GT_IMI_ALL_EXC.Year] AS [All information exchanges in IMI, 2008-2019]
+RESIDENT [GT_IMI_ALL_EXC];
+DROP TABLE [GT_IMI_ALL_EXC];
+
+RENAME TABLE [GT_IMI_ALL_EXC_temp_73466899-8cb9-f55c-52bb-c1e0e782] to [GT_IMI_ALL_EXC];

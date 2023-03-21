@@ -1,0 +1,204 @@
+///$tab Your Europe Advice
+Set dataManagerTables = '','GT_YOU_EUR_ADV_ENQ_BY_NAT','(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP...)','GT_YOU_EUR_ADV_ENQ_BY_USE_TYP','GT_YOU_EUR_ADV_ENQ_SUB','GT_YOU_EUR_ADV_ENQ_PA','GT_YOU_EUR_ADV_SPE_OF_REP';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+
+[GT_YOU_EUR_ADV_ENQ_BY_NAT]:
+LOAD
+	[x1val] AS [Enquiries by nationality],
+	[y1val] AS [GT_YEA_ENQ_NAT.2020],
+	[y2val] AS [GT_YEA_ENQ_NAT.2019],
+	[y3val] AS [GT_YEA_ENQ_NAT.2018]
+    where [x1val] <> 'Year' and [x1val] <>'British';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YOU_EUR_ADV_ENQ_BY_NAT.csv';    
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_YOU_EUR_ADV_ENQ_BY_USE_TYP]:
+Crosstable (Years, Type)
+LOAD
+	[x1val] AS [Enquiries by type of user],
+	//[y1val] AS [2014],
+	//[y2val] AS [2015],
+	//[y3val] AS [2016],
+	[y4val] AS [2017],
+	[y5val] AS [2018],
+	[y6val] AS [2019],
+    [y7val] AS [2020]
+    where [x1val] <> 'Year';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YOU_EUR_ADV_ENQ_BY_USE_TYP.csv';
+
+SQL SELECT 
+	"x1val",
+	//"y1val",
+	//"y2val",
+	//"y3val",
+	"y4val",
+	"y5val",
+	"y6val",
+    "y7val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_YOU_EUR_ADV_ENQ_SUB]:
+Crosstable (Years, Sub_area)
+LOAD
+	[x1val] AS [Enquiries by subject area],
+	//[y1val] AS [2014],
+	//[y2val] AS [2015],
+	//[y3val] AS [2016],
+	[y4val] AS [2017],
+	[y5val] AS [2018],
+	[y6val] AS [2019],
+    [y7val] AS [2020]
+    where [x1val] <> 'Year';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YOU_EUR_ADV_ENQ_SUB.csv';
+
+SQL SELECT 
+	"x1val",
+	//"y1val",
+	//"y2val",
+	//"y3val",
+	"y4val",
+	"y5val",
+	"y6val",
+    "y7val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_YOU_EUR_ADV_ENQ_PA]:
+Crosstable (Years, Enquiries)
+LOAD
+	[x1val] AS [GT_YEA_ENQ_YEAR],
+	[y1val] AS [2015],
+	[y2val] AS [2016],
+	[y3val] AS [2017],
+	[y4val] AS [2018],
+	[y5val] AS [2019],
+    [y6val] AS [2020]
+    where [x1val] <> 'Year';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YOU_EUR_ADV_ENQ_PA.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+	"y5val",
+    "y6val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_YOU_EUR_ADV_SPE_OF_REP]:
+Crosstable (Years, Speed)
+LOAD
+	[x1val] AS [GT_YEA_SPE_REP_YEAR],
+	[y1val] AS [2011],
+	[y2val] AS [2012],
+	[y3val] AS [2013],
+	[y4val] AS [2014],
+	[y5val] AS [2015],
+	[y6val] AS [2016],
+	[y7val] AS [2017],
+	[y8val] AS [2018],
+	[y9val] AS [2019],
+    [y10val] AS [2020]
+    where [x1val] <> 'Year';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YOU_EUR_ADV_SPE_OF_REP.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+	"y5val",
+	"y6val",
+	"y7val",
+	"y8val",
+	"y9val",
+    "y10val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+RENAME TABLE [GT_YOU_EUR_ADV_ENQ_BY_USE_TYP] to [(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP...)];
+
+[GT_YEA_ENQ_temp_1a7cfc41-efb0-c2ff-459c-a4c23445]:
+LOAD
+	[GT_YEA_ENQ_YEAR] AS [GT_YEA_ENQ.GT_YEA_ENQ_YEAR],
+	[GT_YEA_ENQ.2015],
+	[GT_YEA_ENQ.2016],
+	[GT_YEA_ENQ.2017],
+	[GT_YEA_ENQ.2018],
+	[GT_YEA_ENQ.2019]
+RESIDENT [GT_YEA_ENQ];
+DROP TABLE [GT_YEA_ENQ];
+
+[(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP...)_temp_cdf3ff40-9e3e-6106-d398-6284990c]:
+LOAD
+	[Years] AS [(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP......).Years],
+	[Enquiries by type of user],
+	[Type]
+RESIDENT [(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP...)];
+DROP TABLE [(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP...)];
+
+[GT_YOU_EUR_ADV_ENQ_SUB_temp_75d11bb4-2a26-9985-3029-d69a859d]:
+LOAD
+	[Years] AS [GT_YOU_EUR_ADV_ENQ_SUB.Years],
+	[Enquiries by subject area],
+	[Sub_area]
+RESIDENT [GT_YOU_EUR_ADV_ENQ_SUB];
+DROP TABLE [GT_YOU_EUR_ADV_ENQ_SUB];
+
+[GT_YOU_EUR_ADV_ENQ_PA_temp_2ed85474-6bfb-006d-6e46-26df8c9c]:
+LOAD
+	[GT_YEA_ENQ_YEAR] AS [GT_YOU_EUR_ADV_ENQ_PA.GT_YEA_ENQ_YEAR],
+	[Years] AS [Total annual enquiries],
+	[Enquiries]
+RESIDENT [GT_YOU_EUR_ADV_ENQ_PA];
+DROP TABLE [GT_YOU_EUR_ADV_ENQ_PA];
+
+[GT_YOU_EUR_ADV_SPE_OF_REP_temp_61039a10-e2a8-6b08-b4e0-ab0316e1]:
+LOAD
+	[Years] AS [Speed of replies],
+	[GT_YEA_SPE_REP_YEAR],
+	[Speed]
+RESIDENT [GT_YOU_EUR_ADV_SPE_OF_REP];
+DROP TABLE [GT_YOU_EUR_ADV_SPE_OF_REP];
+
+RENAME TABLE [GT_YEA_ENQ_temp_1a7cfc41-efb0-c2ff-459c-a4c23445] to [GT_YEA_ENQ];
+
+RENAME TABLE [(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP...)_temp_cdf3ff40-9e3e-6106-d398-6284990c] to [(GT_YOU_EUR_ADV_ENQ_BY_USE_TYP...)];
+
+RENAME TABLE [GT_YOU_EUR_ADV_ENQ_SUB_temp_75d11bb4-2a26-9985-3029-d69a859d] to [GT_YOU_EUR_ADV_ENQ_SUB];
+
+RENAME TABLE [GT_YOU_EUR_ADV_ENQ_PA_temp_2ed85474-6bfb-006d-6e46-26df8c9c] to [GT_YOU_EUR_ADV_ENQ_PA];
+
+RENAME TABLE [GT_YOU_EUR_ADV_SPE_OF_REP_temp_61039a10-e2a8-6b08-b4e0-ab0316e1] to [GT_YOU_EUR_ADV_SPE_OF_REP];

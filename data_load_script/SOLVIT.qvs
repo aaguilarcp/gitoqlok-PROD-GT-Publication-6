@@ -1,0 +1,387 @@
+///$tab SOLVIT
+Set dataManagerTables = '','GT_SOL_HOM_PREP_TIME_2','GT_SOL_HOM_TIM_TO_ACC_3','GT_SOL_HOM_TIM_TO_NOT_ACC_4','GT_SOL_LEA_TIM_TO_ACC_5','GT_SOL_LEA_RES_TIM_6','GT_SOL_RES_RAT_COU_7','GT_SOL_OVE_CAS','GT_SOL_DIS_CAS_HOM','GT_SOL_DIS_CAS_LEA','GT_SOL_CAS_REC_MS','GT_SOL_CAS_SUB_MS','GT_SOL_PRP_ARE','GT_SOL_LEG_ARE','GT_SOL_BUS_CIT','GT_SOL_BIS_MS','GT_SOL_CAS_LIN_ARE','GT_SOL_HOM_FIR_RES_1';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+[GT_SOL_HOM_PREP_TIME_2]:
+LOAD
+	[x1val] AS [SOLVIT],
+	[y1val] AS [GT_SOL_HOM_CEN_IND2.2021],
+	[y2val] AS [GT_SOL_HOM_CEN_IND2.2020],
+	[y3val] AS [GT_SOL_HOM_CEN_IND2.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_HOM_PREP_TIME_2.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_HOM_TIM_TO_ACC_3]:
+LOAD
+	[x1val] AS [SOLVIT],
+	[y1val] AS [GT_SOL_HOM_ACC_IND3.2021],
+	[y2val] AS [GT_SOL_HOM_ACC_IND3.2020]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_HOM_TIM_TO_ACC_3.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_HOM_TIM_TO_NOT_ACC_4]:
+LOAD
+	[x1val] AS [SOLVIT],
+	[y1val] AS [GT_SOL_HOM_NOT_ACC_IND4.2021]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_HOM_TIM_TO_NOT_ACC_4.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_LEA_TIM_TO_ACC_5]:
+LOAD
+	[x1val] AS [SOLVIT],
+	[y1val] AS [GT_SOL_LEA_TIM_IND5.2021],
+	[y2val] AS [GT_SOL_LEA_TIM_IND5.2020]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_LEA_TIM_TO_ACC_5.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_LEA_RES_TIM_6]:
+LOAD
+	[x1val] AS [SOLVIT],
+	[y1val] AS [GT_SOL_LEA_RES_IND6.2021],
+	[y2val] AS [GT_SOL_LEA_RES_IND6.2020],
+	[y3val] AS [GT_SOL_LEA_RES_IND6.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_LEA_RES_TIM_6.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_RES_RAT_COU_7]:
+LOAD
+	[x1val] AS [SOLVIT],
+	[y1val] AS [GT_SOL_RES_RAT_IND7.2021],
+	[y2val] AS [GT_SOL_RES_RAT_IND7.2020],
+	[y3val] AS [GT_SOL_RES_RAT_IND7.2019]
+	where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_RES_RAT_COU_7.csv';
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_OVE_CAS]:
+LOAD
+	[x1val] AS [GT_SOL_OVE_CAS_Year],
+	[x2val] AS [CasesofCas]
+    where [x1val] <> 'Year';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_OVE_CAS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_DIS_CAS_HOM]:
+LOAD
+	[x1val] AS [GT_SOL_DIS_CAS_HOM_x1val],
+	[y1val] AS [GT_SOL_DIS_CAS_HOM.2021],
+	[y2val] AS [GT_SOL_DIS_CAS_HOM.2020],
+	[y3val] AS [GT_SOL_DIS_CAS_HOM.2019]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_DIS_CAS_HOM.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_DIS_CAS_LEA]:
+LOAD
+	[x1val] AS [GT_SOL_DIS_CAS_LEA_x1val],
+	[y1val] AS [GT_SOL_DIS_CAS_LEA.2021],
+	[y2val] AS [GT_SOL_DIS_CAS_LEA.2020],
+	[y3val] AS [GT_SOL_DIS_CAS_LEA.2019]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_DIS_CAS_LEA.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_CAS_REC_MS]:
+LOAD
+	[x1val] AS [GT_SOL_CAS_REC_MS_x1val],
+	[y1val] AS [GT_SOL_CAS_REC_MS.2020],
+	[y2val] AS [GT_SOL_CAS_REC_MS.2019],
+	[y3val] AS [GT_SOL_CAS_REC_MS.2018],
+    [y4val] AS [GT_SOL_CAS_REC_MS.2017]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_CAS_REC_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_SOL_CAS_SUB_MS]:
+LOAD
+	[x1val] AS [GT_SOL_CAS_SUB_MS_x1val],
+    [y1val] AS [GT_SOL_CAS_SUB_MS.2020],
+	[y2val] AS [GT_SOL_CAS_SUB_MS.2019],
+	[y3val] AS [GT_SOL_CAS_SUB_MS.2018],
+	[y4val] AS [GT_SOL_CAS_SUB_MS.2017]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_CAS_SUB_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_PRP_ARE]:
+LOAD
+	[x1val] AS [GT_SOL_PRP_ARE_x1val],
+	[y1val] AS [GT_SOL_PRP_ARE.2021],
+	[y2val] AS [GT_SOL_PRP_ARE.2020],
+	[y3val] AS [GT_SOL_PRP_ARE.2019]
+    where [x1val] <> 'Area';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_PRP_ARE.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_SOL_LEG_ARE]:
+LOAD
+	[x1val] AS [GT_SOL_LEG_ARE_x1val],
+	[y1val] AS [GT_SOL_LEG_ARE.2021]
+    where [x1val] <> 'Area';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_LEG_ARE.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+
+[GT_SOL_BUS_CIT]:
+LOAD
+	[x1val] AS [GT_SOL_BUS_CIT_Year],
+	[x2val] AS [GT_SOL_BUS_CIT_CASE],
+	[x3val] AS [GT_SOL_BUS_CIT_BUS]
+    where [x1val] <> 'Year';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_BUS_CIT.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_SOL_BIS_MS]:
+LOAD
+	[x1val] AS [GT_SOL_BIS_MS_x1val],
+	[y1val] AS [GT_SOL_BIS_MS.2020],
+	[y2val] AS [GT_SOL_BIS_MS.2019],
+	[y3val] AS [GT_SOL_BIS_MS.2018],
+    [y4val] AS [GT_SOL_BIS_MS.2017]
+    where [x1val] <> 'Country' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_BIS_MS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+    "y4val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_SOL_CAS_LIN_ARE]:
+LOAD
+	[x1val] AS [GT_SOL_CAS_LIN_ARE_Area],
+	[y1val] AS [GT_SOL_CAS_LIN_ARE.2021],
+	[y2val] AS [GT_SOL_CAS_LIN_ARE.2020],
+	[y3val] AS [GT_SOL_CAS_LIN_ARE.2019]
+    where [x1val] <> 'Area';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_CAS_LIN_ARE.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_SOL_HOM_FIR_RES_1]:
+LOAD
+	[x1val] AS [SOLVIT],
+	[y1val] AS [GT_SOL_HOM_FIR_IND1.2021],
+	[y2val] AS [GT_SOL_HOM_FIR_IND1.2020],
+	[y3val] AS [GT_SOL_HOM_FIR_IND1.2019]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '' ;
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_SOL_HOM_FIR_RES_1.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+///////////////////////////////Table Adjusting///////////////////////////////////////
+
+[GT_SOL_DIS_CAS_HOM_temp_385d3dcc-8df1-e9d3-e120-9e5a752e]:
+LOAD
+	[GT_SOL_DIS_CAS_HOM_x1val] AS [SOLVIT],
+	[GT_SOL_DIS_CAS_HOM.2021],
+	[GT_SOL_DIS_CAS_HOM.2020],
+	[GT_SOL_DIS_CAS_HOM.2019]
+RESIDENT [GT_SOL_DIS_CAS_HOM];
+DROP TABLE [GT_SOL_DIS_CAS_HOM];
+RENAME TABLE [GT_SOL_DIS_CAS_HOM_temp_385d3dcc-8df1-e9d3-e120-9e5a752e] to [GT_SOL_DIS_CAS_HOM];
+
+[GT_SOL_DIS_CAS_LEA_temp_f30a12b1-4b2f-8c0f-82e1-0be54e18]:
+LOAD
+	[GT_SOL_DIS_CAS_LEA_x1val] AS [SOLVIT],
+	[GT_SOL_DIS_CAS_LEA.2021],
+	[GT_SOL_DIS_CAS_LEA.2020],
+	[GT_SOL_DIS_CAS_LEA.2019]
+RESIDENT [GT_SOL_DIS_CAS_LEA];
+DROP TABLE [GT_SOL_DIS_CAS_LEA];
+RENAME TABLE [GT_SOL_DIS_CAS_LEA_temp_f30a12b1-4b2f-8c0f-82e1-0be54e18] to [GT_SOL_DIS_CAS_LEA];
+
+[GT_SOL_CAS_REC_MS_temp_7f10463a-b152-6c24-ab91-80d6d0f7]:
+LOAD
+	[GT_SOL_CAS_REC_MS_x1val] AS [SOLVIT],
+	[GT_SOL_CAS_REC_MS.2017],
+	[GT_SOL_CAS_REC_MS.2018],
+	[GT_SOL_CAS_REC_MS.2019],
+    [GT_SOL_CAS_REC_MS.2020]
+RESIDENT [GT_SOL_CAS_REC_MS];
+DROP TABLE [GT_SOL_CAS_REC_MS];
+RENAME TABLE [GT_SOL_CAS_REC_MS_temp_7f10463a-b152-6c24-ab91-80d6d0f7] to [GT_SOL_CAS_REC_MS];
+
+[GT_SOL_CAS_SUB_MS_temp_75a5eecb-a8ae-9a1e-8cf9-1df1ad1b]:
+LOAD
+	[GT_SOL_CAS_SUB_MS_x1val] AS [SOLVIT],
+    [GT_SOL_CAS_SUB_MS.2020],
+	[GT_SOL_CAS_SUB_MS.2019],
+	[GT_SOL_CAS_SUB_MS.2018],
+	[GT_SOL_CAS_SUB_MS.2017]
+RESIDENT [GT_SOL_CAS_SUB_MS];
+DROP TABLE [GT_SOL_CAS_SUB_MS];
+RENAME TABLE [GT_SOL_CAS_SUB_MS_temp_75a5eecb-a8ae-9a1e-8cf9-1df1ad1b] to [GT_SOL_CAS_SUB_MS];
+
+[GT_SOL_PRP_ARE_temp_c26acbae-5a7f-3e08-61e8-1b0dcfbe]:
+LOAD
+	[GT_SOL_PRP_ARE_x1val] AS [Problem areas],
+	[GT_SOL_PRP_ARE.2021],
+	[GT_SOL_PRP_ARE.2020],
+	[GT_SOL_PRP_ARE.2019]
+RESIDENT [GT_SOL_PRP_ARE];
+DROP TABLE [GT_SOL_PRP_ARE];
+RENAME TABLE [GT_SOL_PRP_ARE_temp_c26acbae-5a7f-3e08-61e8-1b0dcfbe] to [GT_SOL_PRP_ARE];
+
+[GT_SOL_LEG_ARE_temp_7c85828a-7ad6-99e5-57c8-a96c4940]:
+LOAD
+	[GT_SOL_LEG_ARE_x1val] AS [Legal areas informal legal advice],
+	[GT_SOL_LEG_ARE.2021]
+RESIDENT [GT_SOL_LEG_ARE];
+DROP TABLE [GT_SOL_LEG_ARE];
+RENAME TABLE [GT_SOL_LEG_ARE_temp_7c85828a-7ad6-99e5-57c8-a96c4940] to [GT_SOL_LEG_ARE];
+
+
+[GT_SOL_BIS_MS_temp_0caf5950-dd3c-e595-eb66-0f3a1b14]:
+LOAD
+	[GT_SOL_BIS_MS_x1val] AS [SOLVIT],
+	[GT_SOL_BIS_MS.2017],
+	[GT_SOL_BIS_MS.2018],
+	[GT_SOL_BIS_MS.2019],
+    [GT_SOL_BIS_MS.2020]
+RESIDENT [GT_SOL_BIS_MS];
+DROP TABLE [GT_SOL_BIS_MS];
+RENAME TABLE [GT_SOL_BIS_MS_temp_0caf5950-dd3c-e595-eb66-0f3a1b14] to [GT_SOL_BIS_MS];
+
+[GT_SOL_CAS_LIN_ARE_temp_c3c2e396-6931-bc86-f80c-3005eb87]:
+LOAD
+	[GT_SOL_CAS_LIN_ARE_Area] AS [Cases linked to general difficulties],
+	[GT_SOL_CAS_LIN_ARE.2021],
+	[GT_SOL_CAS_LIN_ARE.2020],
+	[GT_SOL_CAS_LIN_ARE.2019]
+RESIDENT [GT_SOL_CAS_LIN_ARE];
+DROP TABLE [GT_SOL_CAS_LIN_ARE];
+RENAME TABLE [GT_SOL_CAS_LIN_ARE_temp_c3c2e396-6931-bc86-f80c-3005eb87] to [GT_SOL_CAS_LIN_ARE];

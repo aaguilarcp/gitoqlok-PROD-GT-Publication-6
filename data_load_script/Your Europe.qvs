@@ -1,0 +1,187 @@
+///$tab Your Europe
+Set dataManagerTables = 'GT_YEU_VIS_CIT','GT_YEU_VIS_BUS','GT_YEU_TRE_NUM_VIS','GT_YEU_VIS_TOP_BUS','GT_YEU_VIS_TOP_CIT','GT_YOU_EUR_VIS_CIT','GT_YOU_EUR_VIS_BUS';
+//This block renames script tables from non generated section which conflict with the names of managed tables
+
+For each name in $(dataManagerTables) 
+    Let index = 0;
+    Let currentName = name; 
+    Let tableNumber = TableNumber(name); 
+    Let matches = 0; 
+    Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+        index = index + 1; 
+        currentName = name & '-' & index; 
+        tableNumber = TableNumber(currentName) 
+        matches = Match('$(currentName)', $(dataManagerTables));
+    Loop 
+    If index > 0 then 
+            Rename Table '$(name)' to '$(currentName)'; 
+    EndIf; 
+Next; 
+Set dataManagerTables = ;
+
+
+Unqualify *;
+
+__countryGeoBase:
+LOAD
+	ISO3Code AS [__ISO3Code],
+	ISO2Code AS [__ISO2Code],
+	Polygon AS [__Polygon]
+FROM [lib://SMS/SMSCountry.qvd]
+(qvd);
+
+__countryCodeIsoTwo2Polygon:
+MAPPING LOAD
+	__ISO2Code,
+	__Polygon
+RESIDENT __countryGeoBase;
+
+
+[GT_YEU_VIS_CIT]:
+LOAD
+	[x1val] AS [CIT_Business-CIT_Country],
+	[y1val] AS [Visits to YE Citizens],
+	[y2val] AS [GT_YEU_VIS_CIT.2019],
+	[y3val] AS [GT_YEU_VIS_CIT.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_VIS_MS_CIT.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_YEU_VIS_BUS]:
+LOAD
+	[x1val] AS [CIT_Business-CIT_Country],
+	[y1val] AS [Visits to YE Business],
+	[y2val] AS [GT_YEU_VIS_BUS.2019],
+	[y3val] AS [GT_YEU_VIS_BUS.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_VIS_MS_BUS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+ALLMETRICS_YEU:
+LOAD [CIT_Business-CIT_Country],'indicator 1' as indicatorYEU,[Visits to YE Citizens] AS value
+RESIDENT GT_YEU_VIS_CIT;
+Concatenate
+LOAD [CIT_Business-CIT_Country],'indicator 2' as indicatorYEU,[Visits to YE Business] AS value
+RESIDENT GT_YEU_VIS_BUS;
+
+[GT_YEA_ENQ]:
+LOAD
+	[x1val] AS [GT_YEA_ENQ_YEAR],
+	[y1val] AS [GT_YEA_ENQ.2015],
+	[y2val] AS [GT_YEA_ENQ.2016],
+	[y3val] AS [GT_YEA_ENQ.2017],
+	[y4val] AS [GT_YEA_ENQ.2018],
+	[y5val] AS [GT_YEA_ENQ.2019],
+    [y6val] AS [GT_YEA_ENQ.2020]
+    where [x1val] <> 'Year';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YOU_EUR_ADV_ENQ_PA.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val",
+	"y4val",
+	"y5val",
+    "y6val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+DROP TABLES __countryGeoBase;
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YOU_EUR_ADV_ENQ_PA.csv';
+
+[GT_YEU_TRE_NUM_VIS]:
+LOAD
+	[x1val] AS [GT_YEU_TRE_NUM_VIS_Year],
+	[x2val] AS [Your Europe Business],
+	[x3val] AS [Your Europe Citizen]
+    where [x1val] <> 'Site';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_TRE_NUM_VIS.csv';
+
+SQL SELECT 
+	"x1val",
+	"x2val",
+	"x3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_YEU_VIS_TOP_BUS]:
+LOAD
+	[x1val] AS [Visits by topic – Business section],
+	[y1val] AS [GT_YEU_VIS_TOP_BUS.2020],
+	[y2val] AS [GT_YEU_VIS_TOP_BUS.2019]
+    where [x1val] <> 'Topic';
+
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_VIS_TOP_BUS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_YEU_VIS_TOP_CIT]:
+LOAD
+	[x1val] AS [Visits by topic – Citizens section],
+	[y1val] AS [GT_YEU_VIS_TOP_CIT.2020],
+	[y2val] AS [GT_YEU_VIS_TOP_CIT.2019],
+	[y3val] AS [GT_YEU_VIS_TOP_CIT.2018]
+    where [x1val] <> 'Topic';
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_VIS_TOP_CIT.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+
+[GT_YOU_EUR_VIS_CIT]:
+LOAD
+	[x1val] AS [Your Europe],
+	[y1val] AS [GT_YEU_VIS_MS_CIT.2020],
+	[y2val] AS [GT_YEU_VIS_MS_CIT.2019],
+	[y3val] AS [GT_YEU_VIS_MS_CIT.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_VIS_MS_CIT.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
+
+[GT_YOU_EUR_VIS_BUS]:
+LOAD
+	[x1val] AS [Your Europe],
+	[y1val] AS [GT_YEU_VIS_MS_BUS.2020],
+	[y2val] AS [GT_YEU_VIS_MS_BUS.2019],
+	[y3val] AS [GT_YEU_VIS_MS_BUS.2018]
+    where [x1val] <> 'Edition' and [x1val] <> 'UK' and [x1val] <> '';
+    
+LIB CONNECT TO 'NEWEDIT_REST_PUB-GT_YEU_VIS_MS_BUS.csv';
+
+SQL SELECT 
+	"x1val",
+	"y1val",
+	"y2val",
+	"y3val"
+FROM CSV (header on, delimiter ",", quote """") "CSV_source";
